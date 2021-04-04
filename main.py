@@ -1,9 +1,12 @@
 from flask import Flask, render_template, redirect
 from flask_ngrok import run_with_ngrok
-from data import db_session
+from data import db_session, users
 from data.users import User, LoginForm
 from forms.user import RegisterForm
-from flask_login import LoginManager, login_user, login_required, logout_user
+from flask_login import LoginManager, login_user, logout_user, current_user, login_required
+from flask_wtf import FlaskForm
+from requests import request
+
 
 app = Flask(__name__)
 login_manager = LoginManager()
@@ -36,19 +39,34 @@ def reqister():
             return render_template('register.html', title='Регистрация',
                                    form=form,
                                    message="Пароли не совпадают")
-        db_sess = db_session.create_session()
-        if db_sess.query(User).filter(User.email == form.email.data).first():
+        if len(form.password.data) <= 8:
             return render_template('register.html', title='Регистрация',
                                    form=form,
-                                   message="Такой пользователь уже есть")
-        user = User(
+                                   message="Вы ввели короткий пароль \n\n\n"
+                                           "Введите пароль от 8 символов")
+        session = db_session.create_session()
+        if session.query(users.User).filter(
+                users.User.email == form.email.data).first():
+            return render_template('register.html', title='Регистрация',
+                                   form=form,
+                                   message="Данная почта уже зарегистрирована")
+        if session.query(users.User).filter(
+                users.User.name == form.name.data).first():
+            return render_template('register.html', title='Регистрация',
+                                   form=form,
+                                   message="Пользователь с таким именем уже зарегистрирован")
+        if len(form.name.data) <= 5:
+            return render_template('register.html', title='Регистрация',
+                                   form=form,
+                                   message="Вы ввели короткое имя пользователя \n\n\n"
+                                           "Введите имя от 5 символов")
+        user = users.User(
             name=form.name.data,
-            email=form.email.data,
-            about=form.about.data
+            email=form.email.data
         )
         user.set_password(form.password.data)
-        db_sess.add(user)
-        db_sess.commit()
+        session.add(user)
+        session.commit()
         return redirect('/login')
     return render_template('register.html', title='Регистрация', form=form)
 
@@ -57,14 +75,19 @@ def reqister():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        db_sess = db_session.create_session()
-        user = db_sess.query(User).filter(User.email == form.email.data).first()
+        session = db_session.create_session()
+        user = session.query(users.User).filter(users.User.email == form.email.data).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
             return redirect("/")
-        return render_template('login.html',
-                               message="Неправильный логин или пароль",
-                               form=form)
+        elif user:
+            return render_template('login.html',
+                                   message="Неправильный логин или пароль",
+                                   form=form)
+        else:
+            return render_template('login.html',
+                                   message="Такого пользователя не существует",
+                                   form=form)
     return render_template('login.html', title='Авторизация', form=form)
 
 
@@ -76,5 +99,5 @@ def logout():
 
 
 if __name__ == '__main__':
-    db_session.global_init("db/blogs.db")
+    db_session.global_init("db/logins.db")
     app.run()

@@ -4,7 +4,7 @@ from .db_session import SqlAlchemyBase
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from flask_wtf import FlaskForm
-from wtforms import PasswordField, SubmitField
+from wtforms import PasswordField, SubmitField, StringField
 from wtforms.fields.html5 import EmailField
 from wtforms.fields.simple import BooleanField
 from wtforms.validators import DataRequired
@@ -17,7 +17,6 @@ class User(SqlAlchemyBase, UserMixin):
     id = sqlalchemy.Column(sqlalchemy.Integer,
                            primary_key=True, autoincrement=True)
     name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    about = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     email = sqlalchemy.Column(sqlalchemy.String,
                               index=True, unique=True, nullable=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
@@ -30,11 +29,11 @@ class User(SqlAlchemyBase, UserMixin):
     def check_password(self, password):
         return check_password_hash(self.hashed_password, password)
 
-    accounts = orm.relation("Accounts", back_populates='user')
+    # accounts = orm.relation("Accounts", back_populates='user')
 
 
 class LoginForm(FlaskForm):
-    email = EmailField('Почта', validators=[DataRequired()])
-    password = PasswordField('Пароль', validators=[DataRequired()])
+    email = StringField('Введите почту')
+    password = PasswordField('Введите пароль')
     remember_me = BooleanField('Запомнить меня')
     submit = SubmitField('Войти')
