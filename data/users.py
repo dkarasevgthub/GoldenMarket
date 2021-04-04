@@ -33,7 +33,7 @@ class User(SqlAlchemyBase, UserMixin):
 
 
 class LoginForm(FlaskForm):
-    email = StringField('Введите почту')
-    password = PasswordField('Введите пароль')
+    email = StringField('Введите почту', validators=[DataRequired()])
+    password = PasswordField('Введите пароль', validators=[DataRequired()])
     remember_me = BooleanField('Запомнить меня')
     submit = SubmitField('Войти')

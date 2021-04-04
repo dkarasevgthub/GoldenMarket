@@ -50,6 +50,20 @@ header {
     font-weight: bold
 }
 
+.gold-accounts {
+    color: #FFD700;
+    line-height: 90px;
+    font-size: 25px;
+    font-weight: bold
+}
+
+.navbar-brand {
+    color: #FFD700;
+    line-height: 90px;
+    font-size: 25px;
+    font-weight: bold
+}
+
 .themes {
     background: #271c1a8c;
     float: left;

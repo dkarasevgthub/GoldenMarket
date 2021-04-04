@@ -23,7 +23,7 @@ def load_user(user_id):
 
 @app.route('/')
 def index():
-    return render_template('base.html', title='market')
+    return render_template('startpage.html', title='market')
 
 
 @app.route('/terms')
@@ -55,11 +55,11 @@ def reqister():
             return render_template('register.html', title='Регистрация',
                                    form=form,
                                    message="Пользователь с таким именем уже зарегистрирован")
-        if len(form.name.data) <= 5:
+        if len(form.name.data) <= 4:
             return render_template('register.html', title='Регистрация',
                                    form=form,
                                    message="Вы ввели короткое имя пользователя \n\n\n"
-                                           "Введите имя от 5 символов")
+                                           "Введите имя от 4 символов")
         user = users.User(
             name=form.name.data,
             email=form.email.data

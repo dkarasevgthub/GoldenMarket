@@ -6,9 +6,11 @@
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
           crossorigin="anonymous">
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="static/css/site-style.css" type="text/css">
     <link rel="shortcut icon" href="static/img/site-logo.png" type="image/png">
-    <title>Gold-Accounts</title>
+    <title>Golden Market</title>
 </head>
 <body>
     <header>
@@ -17,40 +19,48 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <a class="navbar-brand" href="/"><img src="/static/img/site-logo.png" alt="logo" class="logo"></a>
+             <a class="gold-accounts" style="color: #FFD700">Golden Market</a>
             <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
             <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-            <li class="nav-item active" style="margin-left: 30%">
+            <li class="nav-item active" style="margin-left: 20%">
                 <a href="/news" class="news">Новости</a>
             </li>
             <li class="nav-item active" style="margin-left: 10%">
                 <a href="/market" class="market">Аккаунты</a>
             </li>
             <li class="nav-item active" style="margin-left: 10%">
-                <a href="/reviews" class="reviews">Отзывы</a>
+                <a href="https://vk.com/topic-203487503_47479685" class="reviews">Отзывы</a>
             </li>
-            <li class="nav-item active" style="margin-left: 35%">
-                <a href="https://vk.com/semane3" class="contacts">VK</a>
+            <li class="nav-item active" style="margin-left: 25%">
+                <a href="https://vk.com/im?media=&message=123&sel=-203487503" class="contacts">VK</a>
             </li>
-            <li class="nav-item" style="">
-                <a href="/login">
-                    <button style="margin-left: 200px; margin-right: 30px; width: 100px; margin-top: 30px" type="button" class="btn btn-outline-primary">
-                            Войти
-                    </button>
-                </a>
-            </li>
-            <li class="nav-item" style="">
-                <a href="/register">
-                    <button type="button" class="btn btn-outline-success" style="margin-top: 30px">
-                            Зарегистрироваться
-                    </button>
-                </a>
-            </li>
+            {% if current_user.is_authenticated %}
+                <a class="navbar-brand" href="/logout" style="margin-left: 370px; margin-right: 30px; width: 100px; margin-top: 0px; color: #FFD700">{{ current_user.name }}</a>
+            {% else %}
+            <p>
+                <li class="nav-item" style="">
+                    <a href="/login">
+                        <button style="margin-left: 200px; margin-right: 30px; width: 100px; margin-top: 30px" type="button" class="btn btn-outline-primary">
+                                Войти
+                        </button>
+                    </a>
+                </li>
+                <li class="nav-item" style="">
+                    <a href="/register">
+                        <button type="button" class="btn btn-outline-success" style="margin-top: 30px">
+                                Зарегистрироваться
+                        </button>
+                    </a>
+                </li>
+            </p>
+            {% endif %}
             </ul>
             </div>
         </nav>
     </header>
 {% block content %}
 {% endblock %}
+
 </body>
 </html>
 
