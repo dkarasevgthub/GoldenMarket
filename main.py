@@ -13,7 +13,6 @@ login_manager.init_app(app)
 run_with_ngrok(app)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 
-
 @login_manager.user_loader
 def load_user(user_id):
     db_sess = db_session.create_session()
