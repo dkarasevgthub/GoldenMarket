@@ -7,7 +7,6 @@ from flask_login import LoginManager, login_user, logout_user, current_user, log
 from flask_wtf import FlaskForm
 from requests import request
 
-
 app = Flask(__name__)
 login_manager = LoginManager()
 login_manager.init_app(app)

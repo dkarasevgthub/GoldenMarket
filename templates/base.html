@@ -2,65 +2,79 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@600&display=swap"
+          rel="stylesheet">
     <link rel="stylesheet"
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
           crossorigin="anonymous">
-    <link rel="stylesheet"
-          href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="static/css/site-style.css" type="text/css">
     <link rel="shortcut icon" href="static/img/site-logo.png" type="image/png">
     <title>Golden Market</title>
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+<body class="container-fluid bg-secondary p-0">
+<header class="container-fluid bg-dark p-0 m-0">
+    <nav class="navbar navbar-white bg-dark p-0 m-0 w-50 mx-auto">
+        <div class="navbar-brand text-center m-0 p-2">
+            <a href="/"><img src="{{ url_for('static', filename='img/site-logo.png') }}" class="d-inline-block mx-auto" width="50" height="50"></a>
+            Golden Market
+        </div>
+        {% if current_user.is_authenticated %}
+        <div class="m-0 p-0">
+            <a class="navbar-brand">{{ current_user.name }}</a>
+            <a class="navbar-brand" href="/logout">
+                <button class="btn btn-outline-primary">Выйти</button>
+            </a>
+        </div>
+        {% else %}
+        <div class="nav-item">
+            <a href="/login">
+                <button type="button" class="btn btn-outline-primary mr-2">
+                    Войти
+                </button>
+            </a>
+            <a href="/register">
+                <button type="button" class="btn btn-outline-success">
+                    Зарегистрироваться
+                </button>
+            </a>
+        </div>
+        {% endif %}
+    </nav>
+</header>
+<main>
+    <div class="container-fluid w-50 mt-3 p-0 text-center">
+        <a href="/">
+            <button class="btn btn-dark mx-auto px-5 py-2">Главная</button>
+        </a>
+        <a href="/news">
+            <button class="btn btn-dark mx-auto px-5 py-2">Новости</button>
+        </a>
+        <a href="/accounts">
+            <button class="btn btn-dark mx-auto px-5 py-2">Аккаунты</button>
+        </a>
+        <a href="https://vk.com/topic-203487503_47479685" target="_blank">
+            <button class="btn btn-dark mx-auto px-5 py-2">Отзывы</button>
+        </a>
+        <a href="/contacts">
+            <button class="btn btn-dark mx-auto px-5 py-2">Контакты</button>
+        </a>
+        <a href="https://vk.com/public203487503" target="_blank">
+            <button class="btn btn-dark mx-auto px-3 py-2">
+                <i class="fa fa-vk w-100" aria-hidden="true"></i>
             </button>
-            <a class="navbar-brand" href="/"><img src="/static/img/site-logo.png" alt="logo" class="logo"></a>
-             <a class="gold-accounts" style="color: #FFD700">Golden Market</a>
-            <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
-            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-            <li class="nav-item active" style="margin-left: 20%">
-                <a href="/news" class="news">Новости</a>
-            </li>
-            <li class="nav-item active" style="margin-left: 10%">
-                <a href="/market" class="market">Аккаунты</a>
-            </li>
-            <li class="nav-item active" style="margin-left: 10%">
-                <a href="https://vk.com/topic-203487503_47479685" class="reviews">Отзывы</a>
-            </li>
-            <li class="nav-item active" style="margin-left: 25%">
-                <a href="https://vk.com/im?media=&message=123&sel=-203487503" class="contacts">VK</a>
-            </li>
-            {% if current_user.is_authenticated %}
-                <a class="navbar-brand" href="/logout" style="margin-left: 370px; margin-right: 30px; width: 100px; margin-top: 0px; color: #FFD700">{{ current_user.name }}</a>
-            {% else %}
-            <p>
-                <li class="nav-item" style="">
-                    <a href="/login">
-                        <button style="margin-left: 200px; margin-right: 30px; width: 100px; margin-top: 30px" type="button" class="btn btn-outline-primary">
-                                Войти
-                        </button>
-                    </a>
-                </li>
-                <li class="nav-item" style="">
-                    <a href="/register">
-                        <button type="button" class="btn btn-outline-success" style="margin-top: 30px">
-                                Зарегистрироваться
-                        </button>
-                    </a>
-                </li>
-            </p>
-            {% endif %}
-            </ul>
-            </div>
-        </nav>
-    </header>
-{% block content %}
-{% endblock %}
-
+        </a>
+    </div>
+    <div class="container-fluid w-50 bg-dark rounded-lg mt-3 p-2">
+        {% block content %}
+        {% endblock %}
+    </div>
+</main>
 </body>
 </html>
 
