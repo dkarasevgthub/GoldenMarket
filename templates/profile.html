@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if not current_user.is_authenticated %}
+    <div style="color: white">Вы не авторизованы!!!</div>
+{% else %}
+    <div style="color: white">Ваш профиль</div>
+    <div class="container-fluid w-50 bg-white rounded-lg mt-3 p-2">
+    </div>
+{% endif %}
+{% endblock %}

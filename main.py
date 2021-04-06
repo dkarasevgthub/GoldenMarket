@@ -96,6 +96,11 @@ def logout():
     return redirect("/")
 
 
+@app.route('/profile')
+def profile():
+    return render_template('profile.html')
+
+
 if __name__ == '__main__':
     db_session.global_init("db/logins.db")
     app.run()
