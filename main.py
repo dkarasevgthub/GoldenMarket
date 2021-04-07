@@ -25,12 +25,24 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
-class RedactForm(FlaskForm):
+class RedactMailForm(FlaskForm):
     email_new = StringField('Новая почта', validators=[DataRequired()])
+    submit = SubmitField('Изменить данные')
+
+
+class RedactPasswordForm(FlaskForm):
     password_old = PasswordField('Старый пароль', validators=[DataRequired()])
     password_new = PasswordField('Новый пароль', validators=[DataRequired()])
+    submit = SubmitField('Изменить данные')
+
+
+class RedactNameForm(FlaskForm):
     name_new = StringField('Новое имя пользователя', validators=[DataRequired()])
     submit = SubmitField('Изменить данные')
+
+
+class LoadPhotoForm(FlaskForm):
+    submit = SubmitField('Загрузить фотографию')
 
 
 @login_manager.user_loader
@@ -127,53 +139,93 @@ def profile():
                            created_date=str(current_user.created_date).split()[0])
 
 
-@app.route('/redact', methods=['GET', 'POST'])
+@app.route('/redact')
 def redact():
-    form = RedactForm()
+    return render_template('redact.html', title='Редактирование данных')
+
+
+@app.route('/redact_mail', methods=['GET', 'POST'])
+def redact_mail():
+    form = RedactMailForm()
     if form.validate_on_submit():
+        session = db_session.create_session()
+        if session.query(users.User).filter(
+                users.User.email == form.email_new.data).first():
+            return render_template('redact_mail.html', title='Редактирование почты',
+                                   form=form,
+                                   message="Данная почта уже зарегистрирована")
+        for user in session.query(User).filter(User.id == current_user.id):
+            user.email = form.email_new.data
+            session.commit()
+        return redirect('/profile')
+    return render_template('redact_mail.html', title='Редактирование почты', form=form)
+
+
+@app.route('/redact_password', methods=['GET', 'POST'])
+def redact_password():
+    form = RedactPasswordForm()
+    if form.validate_on_submit():
+        session = db_session.create_session()
+        if not current_user.check_password(form.password_old.data):
+            return render_template('redact_password.html', title='Смена пароля',
+                                   form=form,
+                                   message="Вы ввели неверный пароль")
+        if len(form.password_new.data) <= 8:
+            return render_template('redact_password.html', title='Смена пароля',
+                                   form=form,
+                                   message="Вы ввели короткий пароль \n\n\n"
+                                           "Введите пароль от 8 символов")
+        if form.password_old.data == form.password_new.data:
+            return render_template('redact_password.html', title='Смена пароля',
+                                   form=form,
+                                   message="Вы ввели одинаковые пароли")
+        for user in session.query(User).filter(User.id == current_user.id):
+            user.set_password(form.password_new.data)
+            session.commit()
+        return redirect('/profile')
+    return render_template('redact_password.html', title='Смена пароля', form=form)
+
+
+@app.route('/redact_name', methods=['GET', 'POST'])
+def redact_name():
+    form = RedactNameForm()
+    if form.validate_on_submit():
+        session = db_session.create_session()
+        if session.query(users.User).filter(
+                users.User.name == form.name_new.data).first():
+            return render_template('redact_name.html', title='Редактирование имени пользователя',
+                                   form=form,
+                                   message="Пользователь с таким именем уже зарегистрирован")
+        if len(form.name_new.data) <= 4:
+            return render_template('redact_name.html', title='Редактирование имени пользователя',
+                                   form=form,
+                                   message="Вы ввели короткое имя пользователя \n\n\n"
+                                           "Введите имя от 4 символов")
+        for user in session.query(User).filter(User.id == current_user.id):
+            user.name = form.name_new.data
+            session.commit()
+        return redirect('/profile')
+    return render_template('redact_name.html', title='Редактирование имени пользователя',
+                           form=form)
+
+
+@app.route('/load_photo', methods=['GET', 'POST'])
+def load_photo():
+    form = LoadPhotoForm()
+    if form.validate_on_submit():
+        session = db_session.create_session()
         try:
             photo = request.files['file']
             name = app.config['UPLOAD_STATIC'] + photo.filename
             photo.save(name)
         except Exception:
             pass
-        session = db_session.create_session()
-        if session.query(users.User).filter(
-                users.User.email == form.email_new.data).first():
-            return render_template('redact.html', title='Регистрация',
-                                   form=form,
-                                   message="Данная почта уже зарегистрирована")
-        if not current_user.check_password(form.password_old.data):
-            return render_template('redact.html', title='Изменение данных',
-                                   form=form,
-                                   message="Вы ввели неверный пароль")
-        if len(form.password_new.data) <= 8:
-            return render_template('redact.html', title='Регистрация',
-                                   form=form,
-                                   message="Вы ввели короткий пароль \n\n\n"
-                                           "Введите пароль от 8 символов")
-        if form.password_old == form.password_new:
-            return render_template('redact.html', title='Регистрация',
-                                   form=form,
-                                   message="Вы ввели одинаковые пароли")
-        if session.query(users.User).filter(
-                users.User.name == form.name_new.data).first():
-            return render_template('redact.html', title='Регистрация',
-                                   form=form,
-                                   message="Пользователь с таким именем уже зарегистрирован")
-        if len(form.name_new.data) <= 4:
-            return render_template('redact.html', title='Регистрация',
-                                   form=form,
-                                   message="Вы ввели короткое имя пользователя \n\n\n"
-                                           "Введите имя от 4 символов")
         for user in session.query(User).filter(User.id == current_user.id):
-            user.name = form.name_new.data
-            user.set_password(form.password_new.data)
-            user.email = form.email_new.data
             user.photo = name
             session.commit()
         return redirect('/profile')
-    return render_template('redact.html', title='Изменение данных', form=form)
+    return render_template('load_photo.html', title='Загрузка фотографии',
+                           form=form)
 
 
 if __name__ == '__main__':

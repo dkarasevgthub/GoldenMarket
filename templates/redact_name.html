@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="p-auto" style="margin-left: 300px">
+    <h1 style="color: white; margin-left: -80px"> Редактирование имени  </h1>
+    <h1 style="color: white; margin-left: 10px">пользователя</h1>
+        <form action="" method="post" enctype=multipart/form-data>
+            {{ form.hidden_tag() }}
+            {{ form.csrf_token }}
+            <p style="color: white">
+                {{ form.name_new.label }}<br>
+                {{ form.name_new(class="form-control", nullable=True, style="width: 300px;")}}<br>
+                {% for error in form.name_new.errors %}
+                    <p style="color: red">
+                        {{ error }}
+                    </p>
+            </p>
+                {% endfor %}
+            <p style="margin-left: 65px">{{ form.submit(type="submit", class="btn btn-success") }}</p>
+           {% if message|length > 1 %}
+             <div class="alert alert-danger" style="max-width: 300px">{{message}}</div>
+            {% endif %}
+        </form>
+</div>
+{% endblock %}

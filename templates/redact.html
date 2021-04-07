@@ -1,53 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="p-auto" style="margin-left: 300px">
-    <h1 style="color: white; margin-left: -30px"> Изменение данных </h1>
-        <form action="" method="post" enctype=multipart/form-data>
-            {{ form.hidden_tag() }}
-            {{ form.csrf_token }}
-            <p style="color: white">
-                {{ form.email_new.label }}<br>
-                {{ form.email_new(class="form-control", type="email", nullable=True, style="width: 300px;") }}<br>
-                {% for error in form.email_new.errors %}
-                    <p style="color: red">
-                        {{ error }}
-                    </p>
-                {% endfor %}
-            </p>
-            <p style="color: white">
-                {{ form.password_old.label }}<br>
-                {{ form.password_old(class="form-control", type="password", nullable=True, style="width: 300px;") }}<br>
-                {% for error in form.password_old.errors %}
-                    <p style="color: red">
-                        {{ error }}
-                    </p>
-                {% endfor %}
-            </p>
-            <p style="color: white">
-                {{ form.password_new.label }}<br>
-                {{ form.password_new(class="form-control", type="password", nullable=True, style="width: 300px;") }}<br>
-                {% for error in form.password_new.errors %}
-                    <p style="color: red">
-                        {{ error }}
-                    </p>
-                {% endfor %}
-            </p>
-            <p style="color: white">
-                {{ form.name_new.label }}<br>
-                {{ form.name_new(class="form-control", nullable=True, style="width: 300px;")}}<br>
-                {% for error in form.name_new.errors %}
-                    <p style="color: red">
-                        {{ error }}
-                    </p>
-            </p>
-                {% endfor %}
-            <p style="color: white;">Новая аватарка</p>
-             <p><input type="file" class="form-control-file" id="photo" name="file" style="color: white;"></p>
-            <p style="margin-left: 65px">{{ form.submit(type="submit", class="btn btn-success") }}</p>
-           {% if message|length > 1 %}
-             <div class="alert alert-danger" style="max-width: 300px">{{message}}</div>
-            {% endif %}
-        </form>
-</div>
+{% if not current_user.is_authenticated %}
+    <div style="color: white">Вы не авторизованы!!!</div>
+{% else %}
+    <div class="container-fluid w-50 bg-white rounded-lg mt-5 p-5">
+        <h2 style="color: black; margin-left: 50px; margin-top: -35px">Редактор профиля</h2>
+        <a href="/redact_mail"><h6 style="color: black">Редактировать почту</h6></a>
+        <a href="/redact_password"><h6 style="color: black">Редактировать пароль</h6></a>
+        <a href="/redact_name"><h6 style="color: black">Редактировать имя пользователя</h6></a>
+        <a href="/load_photo"><h6 style="color: black">Загрузить фотографию</h6></a>
+    </div>
+{% endif %}
 {% endblock %}
