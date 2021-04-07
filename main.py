@@ -41,8 +41,10 @@ def load_user(user_id):
 
 @app.route('/')
 def index():
-    return render_template('startpage.html', title='market',
-                           photo=current_user.photo)
+    if current_user.is_authenticated:
+        return render_template('startpage.html', title='Golden Market',
+                               photo=current_user.photo)
+    return render_template('startpage.html', title='Golden Market')
 
 
 @app.route('/terms')
