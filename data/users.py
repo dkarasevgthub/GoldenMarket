@@ -5,10 +5,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from flask_wtf import FlaskForm
 from wtforms import PasswordField, SubmitField, StringField
-from wtforms.fields.html5 import EmailField
 from wtforms.fields.simple import BooleanField
 from wtforms.validators import DataRequired
-from sqlalchemy import orm
 
 
 class User(SqlAlchemyBase, UserMixin):
@@ -19,6 +17,8 @@ class User(SqlAlchemyBase, UserMixin):
     name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     email = sqlalchemy.Column(sqlalchemy.String,
                               index=True, unique=True, nullable=True)
+    photo = sqlalchemy.Column(sqlalchemy.String,
+                              index=True, unique=False, nullable=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     created_date = sqlalchemy.Column(sqlalchemy.DateTime,
                                      default=datetime.datetime.now)
@@ -28,8 +28,6 @@ class User(SqlAlchemyBase, UserMixin):
 
     def check_password(self, password):
         return check_password_hash(self.hashed_password, password)
-
-    # accounts = orm.relation("Accounts", back_populates='user')
 
 
 class LoginForm(FlaskForm):

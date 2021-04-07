@@ -3,8 +3,8 @@
 {% block content %}
 {{ form.hidden_tag() }}
     {{ form.csrf_token }}
-    <div class="p-auto">
-        <h1 style="color: white">Авторизация</h1>
+    <div class="p-auto" style="margin-left: 300px">
+        <h1 style="color: white; margin-left: 20px">Авторизация</h1>
         <form action="" method="post" style="padding-top: 20px;">
             {{ form.hidden_tag() }}
             <p style="color: white">
@@ -25,8 +25,8 @@
                     </div>
                 {% endfor %}
             </p>
-            <p style="color: white">{{ form.remember_me() }} {{ form.remember_me.label }}</p>
-            <p style="color: white">{{ form.submit(type="submit", class="btn btn-success") }}</p>
+            <p style="color: white; margin-left: 75px">{{ form.remember_me() }} {{ form.remember_me.label }}</p>
+            <p style="color: white; margin-left: 110px">{{ form.submit(type="submit", class="btn btn-success") }}</p>
             {% if message|length > 1 %}
              <div class="alert alert-danger" style="max-width: 300px">{{message}}</div>
             {% endif %}

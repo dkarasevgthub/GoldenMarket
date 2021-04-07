@@ -4,8 +4,13 @@
 {% if not current_user.is_authenticated %}
     <div style="color: white">Вы не авторизованы!!!</div>
 {% else %}
-    <div style="color: white">Ваш профиль</div>
-    <div class="container-fluid w-50 bg-white rounded-lg mt-3 p-2">
+    <div class="container-fluid w-50 bg-white rounded-lg mt-5 p-5">
+        <h1 style="color: black; margin-left: 50px; margin-top: -35px">Ваш профиль</h1>
+        <img src="{{ photo }}" class="d-inline-block mx-auto" width=165 height=95>
+        <h5 style="color: black">Имя пользователя - {{ name }}</h5>
+        <h5 style="color: black">Электронная почта - {{ email }} </h5>
+        <h5 style="color: black">Дата регистрации - {{ created_date }} </h5>
+        <a href="/redact" style="margin-left: 70px"><button class="btn btn-dark mx-auto px-5 py-2">Изменить данные</button></a>
     </div>
 {% endif %}
 {% endblock %}

@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="p-auto">
-    <h1 style="color: white"> Регистрация</h1>
+<div class="p-auto" style="margin-left: 300px">
+    <h1 style="color: white; margin-left: 20px"> Регистрация</h1>
         <form action="" method="post" enctype=multipart/form-data>
             {{ form.hidden_tag() }}
             {{ form.csrf_token }}
@@ -42,7 +42,7 @@
                     </p>
             </p>
                 {% endfor %}
-            <p>{{ form.submit(type="submit", class="btn btn-success") }}</p>
+            <p style="margin-left: 60px">{{ form.submit(type="submit", class="btn btn-success") }}</p>
            {% if message|length > 1 %}
              <div class="alert alert-danger" style="max-width: 300px">{{message}}</div>
             {% endif %}
