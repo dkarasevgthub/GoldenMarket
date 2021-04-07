@@ -46,7 +46,7 @@
         {% if current_user.is_authenticated %}
                 <div class="dropdown">
                 <button class="dropdown" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="height: 70px; margin-right: 20px; background-color: dimgray ">
-                    <p><img src="{{ url_for('static', filename='img/user_new.png') }}" style="width: 85px; height: 65px"></p>
+                    <p><img src="{{ photo }}" style="width: 85px; height: 65px"></p>
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     <a class="dropdown-item" href="/profile">Мой профиль</a>

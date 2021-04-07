@@ -41,7 +41,8 @@ def load_user(user_id):
 
 @app.route('/')
 def index():
-    return render_template('startpage.html', title='market')
+    return render_template('startpage.html', title='market',
+                           photo=current_user.photo)
 
 
 @app.route('/terms')
@@ -130,10 +131,10 @@ def redact():
     if form.validate_on_submit():
         try:
             photo = request.files['file']
-            name = app.config['UPLOAD_FOLDER'] + photo.filename
+            name = app.config['UPLOAD_STATIC'] + photo.filename
             photo.save(name)
         except Exception:
-            print('cat')
+            pass
         session = db_session.create_session()
         if session.query(users.User).filter(
                 users.User.email == form.email_new.data).first():
@@ -167,6 +168,7 @@ def redact():
             user.name = form.name_new.data
             user.set_password(form.password_new.data)
             user.email = form.email_new.data
+            user.photo = name
             session.commit()
         return redirect('/profile')
     return render_template('redact.html', title='Изменение данных', form=form)
