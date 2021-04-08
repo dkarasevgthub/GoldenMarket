@@ -7,3 +7,8 @@ form.login_form {
     border-radius: 5px;
     padding: 10px;
 }
+
+a {
+	text-decoration: none !important;
+	border: none !important;
+}

@@ -1,114 +1,139 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet"
-          href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@600&display=swap"
           rel="stylesheet">
-    <link rel="stylesheet"
-          href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
           crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
     <link rel="stylesheet"
           href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="static/css/style.css" type="text/css">
+    <link rel="shortcut icon" href="static/img/site-logo.png" type="image/png">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
             crossorigin="anonymous"></script>
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
             integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
             crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-            crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
-            crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"
-            integrity="sha384-SR1sx49pcuLnqZUnnPwx6FCym0wLsk5JZuNx2bPPENzswTNFaQU1RDvt3wT4gWFG"
-            crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.min.js"
-            integrity="sha384-j0CNLUeiqtyaRmlzUHCPZ+Gy5fQu0dQ6eZ/xAww941Ai1SxSY+0EQqNXNE6DZiVc"
-            crossorigin="anonymous"></script>
-    <title>Golden Market</title>
+    <style>
+        * {
+            font-family: 'Open Sans', sans-serif;
+            color: #d1d1d1;
+        }
+
+        .white-border {
+            border-color: #d1d1d1 !important;
+        }
+
+        .simple-btn {
+            color: #ebebeb !important;
+        }
+
+        img {
+            max-width:100%;
+            height: 100%;
+        }
+
+
+    </style>
+    <title>{{ title }}</title>
 </head>
-<body class="container-fluid bg-secondary p-0">
+<body class="container-fluid p-0"
+      style="background-color: #4e5761;">
 <header class="container-fluid bg-dark p-0 m-0">
     <nav class="navbar navbar-white bg-dark p-0 m-0 w-50 mx-auto">
-        <div class="navbar-brand text-center m-0 p-2">
-            <a href="/"><img src="{{ url_for('static', filename='img/site-logo.png') }}" class="d-inline-block mx-auto" width="50" height="50"></a>
-            Golden Market
+        <div class="navbar-brand text-center m-2 p-0">
+            <a href="/">
+                <img src="{{ url_for('static', filename='img/site-logo.png') }}"
+                     class="mx-auto" width="50" height="50">
+            </a>
+            GOLDEN MARKET
         </div>
         {% if current_user.is_authenticated %}
-                <div class="dropdown">
-                <button class="dropdown" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="height: 70px; margin-right: 20px; background-color: dimgray ">
-                    <p><img src="{{ photo }}" style="width: 85px; height: 65px"></p>
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="/profile">Мой профиль</a>
-                    <a class="dropdown-item" href="/terms">Правила</a>
-                    <a class="dropdown-item" href="/logout">Выход</a>
-                </div>
-                </div>
+        <div class="dropdown d-flex m-2 p-0">
+            <h5 class="dropdown my-auto mx-2" id="dropdownMenuLabel"
+                data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">{{ current_user.name }}</h5>
+            <button class="dropdown bg-dark border-0 p-0" type="button" id="dropdownMenuButton"
+                    data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                {% if is_photo %}
+                <img src="{{ photo }}" width="40" height="40">
+                {% else %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor">
+                    <rect id="backgroundrect" width="100%" height="100%" x="0" y="0" fill="none"
+                          stroke="none"/>
+                    <g class="currentLayer" style="">
+                        <path d="M29.673590507069914,14.905141701277778 a9.538625579103858,9.538625579103858 0 1 1 -19.077251158207716,0 a9.538625579103858,9.538625579103858 0 0 1 19.077251158207716,0 z"
+                              id="svg_1" fill="#d1d1d1" fill-opacity="1"/>
+                        <path fill-rule="evenodd"
+                              d="M0.1423707085346423,20.03248205185983 a19.91570219863874,19.91570219863874 0 1 1 39.83140439727748,0 A19.91570219863874,19.91570219863874 0 0 1 0.1423707085346423,20.03248205185983 zm19.91570219863874,-17.4262394238089 a17.4262394238089,17.4262394238089 0 0 0 -13.612382452769586,28.305191749815314 C8.213209024532947,28.0634889634609 12.104239341592073,25.011407601519522 20.058072907173383,25.011407601519522 s11.842374419865562,3.0495918991665585 13.612382452769586,5.90002677634673 A17.4262394238089,17.4262394238089 0 0 0 20.058072907173383,2.606242628050928 z"
+                              id="svg_2" fill="#d1d1d1" fill-opacity="1"/>
+                    </g>
+                </svg>
+                {% endif %}
+            </button>
+            <div class="white-border dropdown-menu bg-dark border-3 rounded-3"
+                 aria-labelledby="dropdownMenuButton;dropdownMenuLabel">
+                <a class="simple-btn dropdown-item" href="/profile">Профиль</a>
+                <hr class="simple-btn dropdown-divider m-1">
+                <a class="simple-btn dropdown-item" href="/terms">Правила</a>
+                <hr class="simple-btn dropdown-divider m-1">
+                <a class="simple-btn dropdown-item" href="/logout">Выход</a>
+            </div>
+        </div>
         {% else %}
-                <a href="/login"><button style="margin-left: 500px; width: 100px" type="button" class="btn btn-outline-primary">
-                          Вход
+        <div>
+            <a href="/login">
+                <button type="button" class="btn btn-outline-primary mx-2">
+                    Вход
                 </button>
-                </a>
-                <a href="/register"><button type="button" class="btn btn-outline-success">
-                          Регистрация
+            </a>
+            <a href="/register">
+                <button type="button" class="btn btn-outline-success">
+                    Регистрация
                 </button>
-                </a>
+            </a>
+        </div>
         {% endif %}
     </nav>
 </header>
 <main>
-    <div class="container-fluid w-50 mt-3 p-0 text-center">
-        <a href="/">
-            <button class="btn btn-dark mx-auto px-5 py-2">Главная</button>
+    <div class="container-fluid w-50 mt-3 p-0 text-center rounded-lg">
+        <a href="/" class="mx-2">
+            <button class="simple-btn btn btn-dark px-4 py-2">Главная</button>
         </a>
-        <a href="/news">
-            <button class="btn btn-dark mx-auto px-5 py-2">Новости</button>
+        <a href="/news" class="mx-2">
+            <button class="simple-btn btn btn-dark px-5 py-2">Новости</button>
         </a>
-        <a href="/accounts">
-            <button class="btn btn-dark mx-auto px-5 py-2">Аккаунты</button>
+        <a href="/accounts" class="mx-2">
+            <button class="simple-btn btn btn-dark mx-auto px-5 py-2">Аккаунты</button>
         </a>
-        <a href="https://vk.com/topic-203487503_47479685" target="_blank">
-            <button class="btn btn-dark mx-auto px-5 py-2">Отзывы</button>
+        <a class="mx-2" href="https://vk.com/topic-203487503_47479685" target="_blank">
+            <button class="simple-btn btn btn-dark px-5 py-2">Отзывы</button>
         </a>
-        <a href="/contacts">
-            <button class="btn btn-dark mx-auto px-5 py-2">Контакты</button>
+        <a href="/contacts" class="mx-2">
+            <button class="simple-btn btn btn-dark px-5 py-2">Контакты</button>
         </a>
-        <a href="https://vk.com/public203487503" target="_blank">
-            <button class="btn btn-dark mx-auto px-3 py-2">
+        <a href="https://vk.com/public203487503" class="mx-2" target="_blank">
+            <button class="btn btn-dark px-3 py-2">
                 <i class="fa fa-vk w-100" aria-hidden="true"></i>
             </button>
         </a>
     </div>
-    <div class="container-fluid w-50 bg-dark rounded-lg mt-3 p-2">
-        {% block content %}
-        {% endblock %}
-    </div>
+    {% block content %}
+    {% endblock %}
 </main>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
-            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
-            crossorigin="anonymous"></script>
-    <link rel="stylesheet"
-          href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@600&display=swap"
-          rel="stylesheet">
-    <link rel="stylesheet"
-          href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
-          crossorigin="anonymous">
-    <link rel="stylesheet"
-          href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
 </body>
 </html>
 

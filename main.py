@@ -3,34 +3,22 @@ from flask_ngrok import run_with_ngrok
 from data import db_session, users
 from data.users import User, LoginForm
 from forms.user import RegisterForm
+from forms.edit import RedactForm
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
-from flask_wtf import FlaskForm
-from wtforms import PasswordField, SubmitField, StringField
-from wtforms.validators import DataRequired
-import requests
 
 app = Flask(__name__)
 login_manager = LoginManager()
 login_manager.init_app(app)
 run_with_ngrok(app)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
-
 UPLOAD_STATIC = 'static/img/'
-ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_STATIC'] = UPLOAD_STATIC
 
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
-
-
-class RedactForm(FlaskForm):
-    email_new = StringField('Новая почта', validators=[DataRequired()])
-    password_old = PasswordField('Старый пароль', validators=[DataRequired()])
-    password_new = PasswordField('Новый пароль', validators=[DataRequired()])
-    name_new = StringField('Новое имя пользователя', validators=[DataRequired()])
-    submit = SubmitField('Изменить данные')
 
 
 @login_manager.user_loader
@@ -42,18 +30,18 @@ def load_user(user_id):
 @app.route('/')
 def index():
     if current_user.is_authenticated:
-        return render_template('startpage.html', title='Golden Market',
-                               photo=current_user.photo)
-    return render_template('startpage.html', title='Golden Market')
+        return render_template('startpage.html', title='Главная',
+                               photo=current_user.photo, is_photo=current_user.is_photo)
+    return render_template('startpage.html', title='Главная')
 
 
 @app.route('/terms')
 def terms():
-    return render_template('terms.html', title='Terms and guarantees')
+    return render_template('terms.html', title='Положения и гарантии')
 
 
 @app.route('/register', methods=['GET', 'POST'])
-def reqister():
+def register():
     form = RegisterForm()
     if form.validate_on_submit():
         if form.password.data != form.password_again.data:
@@ -124,7 +112,8 @@ def logout():
 def profile():
     return render_template('profile.html', name=current_user.name,
                            photo=current_user.photo, email=current_user.email,
-                           created_date=str(current_user.created_date).split()[0])
+                           created_date=str(current_user.created_date).split()[0].split('-'),
+                           title=current_user.name)
 
 
 @app.route('/redact', methods=['GET', 'POST'])
@@ -171,6 +160,7 @@ def redact():
             user.set_password(form.password_new.data)
             user.email = form.email_new.data
             user.photo = name
+            user.is_photo = True
             session.commit()
         return redirect('/profile')
     return render_template('redact.html', title='Изменение данных', form=form)

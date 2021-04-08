@@ -1,16 +1,53 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% if not current_user.is_authenticated %}
-    <div style="color: white">Вы не авторизованы!!!</div>
-{% else %}
-    <div class="container-fluid w-50 bg-white rounded-lg mt-5 p-5">
-        <h1 style="color: black; margin-left: 50px; margin-top: -35px">Ваш профиль</h1>
-        <img src="{{ photo }}" class="d-inline-block mx-auto" width=165 height=95>
-        <h5 style="color: black">Имя пользователя - {{ name }}</h5>
-        <h5 style="color: black">Электронная почта - {{ email }} </h5>
-        <h5 style="color: black">Дата регистрации - {{ created_date }} </h5>
-        <a href="/redact" style="margin-left: 70px"><button class="btn btn-dark mx-auto px-5 py-2">Изменить данные</button></a>
+<div class="container w-50 bg-dark rounded mt-3 p-3">
+    {% if not current_user.is_authenticated %}
+    <h2>Вы не авторизованы!!!</h2>
+    {% else %}
+    <div class="text-center mb-4"><h2>Ваш профиль</h2></div>
+    <div class="d-flex m-2">
+        <div class="white-border border border-3 rounded-3 m-auto"><img src="{{ photo }}"
+                                                                           width="256"
+                                                                           height="256"></div>
+        <div class="container p-0 text-start mx-3">
+            <div class="d-flex mb-4">
+                <h5 class="my-auto">Имя пользователя: {{ name }}</h5>
+                <a href="/redact">
+                    <button class="simple-btn btn-sm btn-secondary ms-3">Редактировать</button>
+                </a>
+                <a href="/redact">
+                    <button class="simple-btn btn-sm btn-secondary ms-3">Изменить пароль</button>
+                </a>
+            </div>
+            <div class="d-flex my-4">
+                <h5 class="my-auto">Электронная почта: {{ email }}</h5>
+                <a href="/redact">
+                    <button class="simple-btn btn-sm btn-secondary ms-3">Редактировать</button>
+                </a>
+            </div>
+            <div class="d-flex my-4">
+                <h5 class="my-auto">Дата регистрации: {{ created_date[2] }}.{{ created_date[1]
+                    }}.{{ created_date[0] }}</h5>
+            </div>
+            <div class="d-flex my-4">
+                <h5 class="my-auto">Аватар</h5>
+                <div class="input-group">
+                    <a href="/redact">
+                        <button class="btn-sm btn-warning ms-3" type="button"
+                                id="inputGroupFileAddon03">Удалить
+                        </button>
+                    </a>
+                    <input class="form-control form-control-sm bg-secondary simple-btn" type="file" id="formFile">
+                </div>
+            </div>
+            <div class="d-flex mt-4">
+                <a href="/delete">
+                    <button class="btn-sm btn-danger ms-2">Удалить профиль</button>
+                </a>
+            </div>
+        </div>
     </div>
-{% endif %}
+    {% endif %}
+</div>
 {% endblock %}
