@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Новости</h1>
+{% for item in news%}
+<a href="/terms">
+    <div class="col-md6 border rounded">
+        <h2>{{item.title}}</h2>
+        <div>
+            {{item.content}}
+        </div>
+        <div>
+            {{item.created_date}}
+        </div>
+    </div>
+</a>
+{% endfor %}
+{% endblock %}

@@ -7,6 +7,7 @@ from flask_wtf import FlaskForm
 from wtforms import PasswordField, SubmitField, StringField
 from wtforms.fields.simple import BooleanField
 from wtforms.validators import DataRequired
+from sqlalchemy import orm
 
 
 class User(SqlAlchemyBase, UserMixin):
@@ -24,6 +25,8 @@ class User(SqlAlchemyBase, UserMixin):
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     created_date = sqlalchemy.Column(sqlalchemy.DateTime,
                                      default=datetime.datetime.now)
+
+    news = orm.relation("News", back_populates='user')
 
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)

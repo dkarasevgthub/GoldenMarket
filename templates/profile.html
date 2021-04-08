@@ -13,16 +13,16 @@
         <div class="container p-0 text-start mx-3">
             <div class="d-flex mb-4">
                 <h5 class="my-auto">Имя пользователя: {{ name }}</h5>
-                <a href="/redact">
+                <a href="/redact_name">
                     <button class="simple-btn btn-sm btn-secondary ms-3">Редактировать</button>
                 </a>
-                <a href="/redact">
+                <a href="/redact_password">
                     <button class="simple-btn btn-sm btn-secondary ms-3">Изменить пароль</button>
                 </a>
             </div>
             <div class="d-flex my-4">
                 <h5 class="my-auto">Электронная почта: {{ email }}</h5>
-                <a href="/redact">
+                <a href="/redact_mail">
                     <button class="simple-btn btn-sm btn-secondary ms-3">Редактировать</button>
                 </a>
             </div>
@@ -38,7 +38,11 @@
                                 id="inputGroupFileAddon03">Удалить
                         </button>
                     </a>
-                    <input class="form-control form-control-sm bg-secondary simple-btn" type="file" id="formFile">
+                    <a href="/load_photo">
+                        <button class="btn-sm btn-success ms-3" type="button"
+                                id="inputGroupFileAddon03">Загрузить
+                        </button>
+                    </a>
                 </div>
             </div>
             <div class="d-flex mt-4">

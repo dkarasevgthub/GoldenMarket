@@ -64,21 +64,7 @@
             <button class="dropdown bg-dark border-0 p-0" type="button" id="dropdownMenuButton"
                     data-toggle="dropdown"
                     aria-haspopup="true" aria-expanded="false">
-                {% if is_photo %}
-                <img src="{{ photo }}" width="40" height="40">
-                {% else %}
-                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor">
-                    <rect id="backgroundrect" width="100%" height="100%" x="0" y="0" fill="none"
-                          stroke="none"/>
-                    <g class="currentLayer" style="">
-                        <path d="M29.673590507069914,14.905141701277778 a9.538625579103858,9.538625579103858 0 1 1 -19.077251158207716,0 a9.538625579103858,9.538625579103858 0 0 1 19.077251158207716,0 z"
-                              id="svg_1" fill="#d1d1d1" fill-opacity="1"/>
-                        <path fill-rule="evenodd"
-                              d="M0.1423707085346423,20.03248205185983 a19.91570219863874,19.91570219863874 0 1 1 39.83140439727748,0 A19.91570219863874,19.91570219863874 0 0 1 0.1423707085346423,20.03248205185983 zm19.91570219863874,-17.4262394238089 a17.4262394238089,17.4262394238089 0 0 0 -13.612382452769586,28.305191749815314 C8.213209024532947,28.0634889634609 12.104239341592073,25.011407601519522 20.058072907173383,25.011407601519522 s11.842374419865562,3.0495918991665585 13.612382452769586,5.90002677634673 A17.4262394238089,17.4262394238089 0 0 0 20.058072907173383,2.606242628050928 z"
-                              id="svg_2" fill="#d1d1d1" fill-opacity="1"/>
-                    </g>
-                </svg>
-                {% endif %}
+                    <img src="{{ photo }}" width="40" height="40">
             </button>
             <div class="white-border dropdown-menu bg-dark border-3 rounded-3"
                  aria-labelledby="dropdownMenuButton;dropdownMenuLabel">
