@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="p-auto" style="margin-left: 300px">
+    <h1 style="color: white; margin-left: -30px"> Загрузка фотографии </h1>
+        <form action="" method="post" enctype=multipart/form-data>
+            {{ form.hidden_tag() }}
+            {{ form.csrf_token }}
+            <p style="color: white;">Выберите фотографию</p>
+             <p><input type="file" class="form-control-file" id="photo" name="file" style="color: white;"></p>
+            <p style="margin-left: 65px">{{ form.submit(type="submit", class="btn btn-success") }}</p>
+           {% if message|length > 1 %}
+             <div class="alert alert-danger" style="max-width: 300px">{{message}}</div>
+            {% endif %}
+        </form>
+</div>
+{% endblock %}
