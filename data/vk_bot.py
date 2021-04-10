@@ -9,9 +9,10 @@ USER_TOKEN = '6416756d35418d30555da42ca5ff711963f022b1' \
 GROUP_TOKEN = '362ed726c14963a17c777db697e93fb0c371c60' \
               '71bd08be014138bfdef0bbcbbe2755016e25bda6143739'
 GROUP_ID = 203487503
+EXCEPTIONS = [545571708]
 
 
-def waiting_for_id_back():
+def back_keyb():
     keyboard = VkKeyboard(one_time=False)
     keyboard.add_button('Back', color=VkKeyboardColor.SECONDARY)
     return keyboard.get_keyboard()
@@ -33,15 +34,18 @@ def user(id, info, type='white'):
         keyboard.add_vkpay_button(hash=f"action=transfer-to-user&user_id={id}")
         keyboard.add_line()
     if type == 'white':
-        keyboard.add_button(f'Downgrade [{id}]', color=VkKeyboardColor.NEGATIVE)
+        keyboard.add_button(f'Downgrade', color=VkKeyboardColor.NEGATIVE, payload=f'{id}')
     else:
-        keyboard.add_button(f'Unblock [{id}]', color=VkKeyboardColor.POSITIVE)
+        keyboard.add_button(f'Unblock', color=VkKeyboardColor.POSITIVE, payload=f'{id}')
     return keyboard.get_keyboard(), s
 
 
 def keyb(is_admin):
     keyboard = VkKeyboard(one_time=False)
-    keyboard.add_button('someshit', color=VkKeyboardColor.POSITIVE)
+    keyboard.add_button('Write a review', color=VkKeyboardColor.PRIMARY)
+    keyboard.add_button('Offer an improvement', color=VkKeyboardColor.PRIMARY)
+    keyboard.add_line()
+    keyboard.add_openlink_button('Go to the website', 'http://127.0.0.1:5000')
     if is_admin:
         keyboard.add_line()
         keyboard.add_button('Administration', color=VkKeyboardColor.SECONDARY)
@@ -93,6 +97,8 @@ admin_board = False
 white_board = False
 black_board = False
 waiting_for_id = False
+waiting_for_rev = False
+waiting_for_imp = False
 vk_user_session.method("status.set", {"text": "Bot status: Running", "group_id": GROUP_ID})
 for event in longpoll.listen():
     if event.type == VkBotEventType.MESSAGE_NEW and event.obj.message['from_id'] not in black:
@@ -100,38 +106,92 @@ for event in longpoll.listen():
             is_admin = True
         else:
             is_admin = False
-        if event.obj.message['text'] == 'Administration' and is_admin:
+        if waiting_for_rev and not admin_board and not waiting_for_imp and event.obj.message[
+            'text'] != 'Back':
+            waiting_for_rev = False
+            keyboard = keyb(is_admin)
+            cur.execute(f"INSERT INTO reviews(vk_id, value) "
+                        f"VALUES({event.obj.message['from_id']}, '{event.obj.message['text']}')")
+            vk.messages.send(user_id=event.obj.message['from_id'],
+                             message="Thanks for your review!",
+                             random_id=random.randint(0, 2 ** 64),
+                             keyboard=keyboard
+                             )
+            con.commit()
+        if waiting_for_imp and not admin_board and not waiting_for_rev and event.obj.message[
+            'text'] != 'Back':
+            waiting_for_imp = False
+            keyboard = keyb(is_admin)
+            cur.execute(f"INSERT INTO improvements(vk_id, value) "
+                        f"VALUES({event.obj.message['from_id']}, '{event.obj.message['text']}')")
+            vk.messages.send(user_id=event.obj.message['from_id'],
+                             message="Thanks for your improvement!",
+                             random_id=random.randint(0, 2 ** 64),
+                             keyboard=keyboard
+                             )
+            con.commit()
+        if event.obj.message['text'] == 'Write a review' and not admin_board \
+                and not waiting_for_imp:
+            waiting_for_rev = True
+            keyboard = back_keyb()
+            vk.messages.send(user_id=event.obj.message['from_id'],
+                             message="Enter your review",
+                             random_id=random.randint(0, 2 ** 64),
+                             keyboard=keyboard
+                             )
+        if event.obj.message['text'] == 'Offer an improvement' and not admin_board \
+                and not waiting_for_rev:
+            waiting_for_imp = True
+            keyboard = back_keyb()
+            vk.messages.send(user_id=event.obj.message['from_id'],
+                             message="Enter your improvement",
+                             random_id=random.randint(0, 2 ** 64),
+                             keyboard=keyboard
+                             )
+        elif event.obj.message['text'] == 'Back' and not admin_board:
+            keyboard = keyb(is_admin)
+            waiting_for_rev = False
+            waiting_for_imp = False
+            vk.messages.send(user_id=event.obj.message['from_id'],
+                             message="⏬",
+                             random_id=random.randint(0, 2 ** 64),
+                             keyboard=keyboard
+                             )
+        if event.obj.message['text'] == 'Administration' \
+                and event.obj.message['from_id'] in admins:
             keyboard = admin_keyb()
             admin_board = True
             vk.messages.send(user_id=event.obj.message['from_id'],
-                             message="Вы в панели администратора",
+                             message="⏬",
                              random_id=random.randint(0, 2 ** 64),
                              keyboard=keyboard
                              )
-        elif event.obj.message[
-            'text'] == 'Back' and admin_board and not white_board and \
-                black_board and waiting_for_id:
+        elif event.obj.message['text'] == 'Back' and \
+                admin_board and not white_board and \
+                black_board and waiting_for_id and event.obj.message['from_id'] in admins:
             keyboard = list_keyb()
             waiting_for_id = False
             vk.messages.send(user_id=event.obj.message['from_id'],
-                             message="Вы в панели админа",
+                             message="⏬",
                              random_id=random.randint(0, 2 ** 64),
                              keyboard=keyboard
                              )
-        elif event.obj.message[
-            'text'] == 'Back' and admin_board and white_board and not \
-                black_board and waiting_for_id:
+        elif event.obj.message['text'] == 'Back' and \
+                admin_board and white_board and not \
+                black_board and waiting_for_id and event.obj.message['from_id'] in admins:
             keyboard = list_keyb()
             waiting_for_id = False
             vk.messages.send(user_id=event.obj.message['from_id'],
-                             message="Вы в панели админа",
+                             message="⏬",
                              random_id=random.randint(0, 2 ** 64),
                              keyboard=keyboard
                              )
-        elif not white_board and waiting_for_id and admin_board and black_board:
+        elif not white_board and waiting_for_id and admin_board \
+                and black_board and event.obj.message['from_id'] in admins:
             keyboard = list_keyb()
             waiting_for_id = False
-            if int(event.obj.message['text']) != event.obj.message['from_id']:
+            if int(event.obj.message['text']) != event.obj.message['from_id'] and int(
+                    event.obj.message['text']) not in EXCEPTIONS:
                 if int(event.obj.message['text']) not in black:
                     black.append(int(event.obj.message['text']))
                     cur.execute(f"INSERT INTO permissions(id, is_blocked, is_admin) "
@@ -143,18 +203,26 @@ for event in longpoll.listen():
                                 f"WHERE id = {event.obj.message['text']}")
                 con.commit()
                 vk.messages.send(user_id=event.obj.message['from_id'],
-                                 message='Пользователь добавлен успешно',
+                                 message='User added successfully',
+                                 random_id=random.randint(0, 2 ** 64),
+                                 keyboard=keyboard
+                                 )
+            elif int(event.obj.message['text']) in EXCEPTIONS:
+                keyboard = list_keyb()
+                vk.messages.send(user_id=event.obj.message['from_id'],
+                                 message="You can't block this user",
                                  random_id=random.randint(0, 2 ** 64),
                                  keyboard=keyboard
                                  )
             else:
                 keyboard = list_keyb()
                 vk.messages.send(user_id=event.obj.message['from_id'],
-                                 message='Нельзя заблокировать самого себя',
+                                 message="You can't block yourself",
                                  random_id=random.randint(0, 2 ** 64),
                                  keyboard=keyboard
                                  )
-        elif white_board and waiting_for_id and admin_board and not black_board:
+        elif white_board and waiting_for_id and admin_board and not black_board and \
+                event.obj.message['from_id'] in admins:
             keyboard = list_keyb()
             waiting_for_id = False
             if int(event.obj.message['text']) not in admins:
@@ -168,66 +236,69 @@ for event in longpoll.listen():
                             f"WHERE id = {event.obj.message['text']}")
             con.commit()
             vk.messages.send(user_id=event.obj.message['from_id'],
-                             message='Пользователь добавлен успешно',
+                             message='User added successfully',
                              random_id=random.randint(0, 2 ** 64),
                              keyboard=keyboard
                              )
-        elif event.obj.message['text'] == 'Shut down' and admin_board:
+        elif event.obj.message['text'] == 'Shut down' and \
+                admin_board and event.obj.message['from_id'] in admins:
             terminate()
-        elif event.obj.message['text'] == 'Administrators' and admin_board:
+        elif event.obj.message['text'] == 'Administrators' and \
+                admin_board and event.obj.message['from_id'] in admins:
             keyboard = list_keyb()
             white_board = True
             vk.messages.send(user_id=event.obj.message['from_id'],
-                             message="Вы в редакторе списка админов",
+                             message="⏬",
                              random_id=random.randint(0, 2 ** 64),
                              keyboard=keyboard
                              )
-        elif event.obj.message['text'] == 'Blacklist' and admin_board:
+        elif event.obj.message['text'] == 'Blacklist' and \
+                admin_board and event.obj.message['from_id'] in admins:
             keyboard = list_keyb()
             black_board = True
             vk.messages.send(user_id=event.obj.message['from_id'],
-                             message="Вы в редакторе черного списка",
+                             message="⏬",
                              random_id=random.randint(0, 2 ** 64),
                              keyboard=keyboard
                              )
-        elif event.obj.message[
-            'text'] == 'Back' and admin_board and white_board and not black_board:
+        elif event.obj.message['text'] == 'Back' and admin_board and \
+                white_board and not black_board and event.obj.message['from_id'] in admins:
             keyboard = admin_keyb()
             white_board = False
             vk.messages.send(user_id=event.obj.message['from_id'],
-                             message="Вы в панели администратора",
+                             message="⏬",
                              random_id=random.randint(0, 2 ** 64),
                              keyboard=keyboard
                              )
-        elif event.obj.message[
-            'text'] == 'Back' and admin_board and not white_board and not black_board:
+        elif event.obj.message['text'] == 'Back' and admin_board and not \
+                white_board and not black_board and event.obj.message['from_id'] in admins:
             keyboard = keyb(is_admin)
             admin_board = False
             vk.messages.send(user_id=event.obj.message['from_id'],
-                             message="Вы в главном меню",
+                             message="⏬",
                              random_id=random.randint(0, 2 ** 64),
                              keyboard=keyboard
                              )
-        elif event.obj.message[
-            'text'] == 'Back' and admin_board and white_board and not black_board:
+        elif event.obj.message['text'] == 'Back' and admin_board and \
+                white_board and not black_board and event.obj.message['from_id'] in admins:
             keyboard = admin_keyb()
             white_board = False
             vk.messages.send(user_id=event.obj.message['from_id'],
-                             message="Вы в панели администратора",
+                             message="⏬",
                              random_id=random.randint(0, 2 ** 64),
                              keyboard=keyboard
                              )
-        elif event.obj.message[
-            'text'] == 'Back' and admin_board and not white_board and black_board:
+        elif event.obj.message['text'] == 'Back' and admin_board and not \
+                white_board and black_board and event.obj.message['from_id'] in admins:
             keyboard = admin_keyb()
             black_board = False
             vk.messages.send(user_id=event.obj.message['from_id'],
-                             message="Вы в панели администратора",
+                             message="⏬",
                              random_id=random.randint(0, 2 ** 64),
                              keyboard=keyboard
                              )
-        elif event.obj.message[
-            'text'] == 'All' and admin_board and not white_board and black_board:
+        elif event.obj.message['text'] == 'All' and admin_board and not \
+                white_board and black_board and event.obj.message['from_id'] in admins:
             if black:
                 for i in range(len(black)):
                     is_online = vk_group_session.method("users.get", {"user_ids": black[i],
@@ -242,12 +313,12 @@ for event in longpoll.listen():
             else:
                 keyboard = list_keyb()
                 vk.messages.send(user_id=event.obj.message['from_id'],
-                                 message='Черный список пуст',
+                                 message='The blacklist is empty',
                                  random_id=random.randint(0, 2 ** 64),
                                  keyboard=keyboard
                                  )
-        elif event.obj.message[
-            'text'] == 'All' and admin_board and white_board and not black_board:
+        elif event.obj.message['text'] == 'All' and admin_board and \
+                white_board and not black_board and event.obj.message['from_id'] in admins:
             if admins:
                 for i in range(len(admins)):
                     is_online = vk_group_session.method("users.get", {"user_ids": admins[i],
@@ -262,69 +333,73 @@ for event in longpoll.listen():
             else:
                 keyboard = list_keyb()
                 vk.messages.send(user_id=event.obj.message['from_id'],
-                                 message='Список админов пуст',
+                                 message='The list of admins is empty',
                                  random_id=random.randint(0, 2 ** 64),
                                  keyboard=keyboard
                                  )
-        elif event.obj.message['text'].split()[0] == \
-                'Downgrade' and admin_board and white_board and not black_board:
-            if int(event.obj.message['text'].split()[1][1:-1]) != event.obj.message['from_id']:
-                del admins[admins.index(int(event.obj.message['text'].split()[1][1:-1]))]
+        elif event.obj.message['text'] == 'Downgrade' and admin_board and white_board and not \
+                black_board and event.obj.message['from_id'] in admins:
+            if int(event.obj.message['text'].split()[1][1:-1]) != event.obj.message['from_id'] and \
+                    int(event.obj.message['payload']) not in EXCEPTIONS:
+                del admins[admins.index(int(event.obj.message['payload']))]
                 cur.execute(f"DELETE from permissions\n"
-                            f"WHERE id = {event.obj.message['text'].split()[1][1:-1]}")
+                            f"WHERE id = {event.obj.message['payload']}")
                 con.commit()
                 keyboard = list_keyb()
                 vk.messages.send(user_id=event.obj.message['from_id'],
-                                 message='Пользователь понижен успешно',
+                                 message='User downgraded successfully',
+                                 random_id=random.randint(0, 2 ** 64),
+                                 keyboard=keyboard
+                                 )
+            elif int(event.obj.message['payload']) in EXCEPTIONS:
+                keyboard = list_keyb()
+                vk.messages.send(user_id=event.obj.message['from_id'],
+                                 message="You can't downgrade this user",
                                  random_id=random.randint(0, 2 ** 64),
                                  keyboard=keyboard
                                  )
             else:
                 keyboard = list_keyb()
                 vk.messages.send(user_id=event.obj.message['from_id'],
-                                 message='Нельзя понизить самого себя',
+                                 message="You can't downgrade yourself",
                                  random_id=random.randint(0, 2 ** 64),
                                  keyboard=keyboard
                                  )
-        elif event.obj.message['text'].split()[0] == \
-                'Unblock' and admin_board and not white_board and black_board:
-            del black[black.index(int(event.obj.message['text'].split()[1][1:-1]))]
+        elif event.obj.message['text'] == 'Unblock' and admin_board and not white_board and \
+                black_board and event.obj.message['from_id'] in admins:
+            del black[black.index(int(event.obj.message['payload']))]
             cur.execute(f"DELETE from permissions\n"
-                        f"WHERE id = {event.obj.message['text'].split()[1][1:-1]}")
+                        f"WHERE id = {event.obj.message['payload']}")
             con.commit()
             keyboard = list_keyb()
             vk.messages.send(user_id=event.obj.message['from_id'],
-                             message='Пользователь разблокирован успешно',
+                             message='User unlocked successfully',
                              random_id=random.randint(0, 2 ** 64),
                              keyboard=keyboard
                              )
-        elif event.obj.message[
-            'text'] == 'Add user' and admin_board and not white_board and black_board:
+        elif event.obj.message['text'] == 'Add user' and admin_board and not white_board \
+                and black_board and event.obj.message['from_id'] in admins:
             waiting_for_id = True
-            keyboard = waiting_for_id_back()
+            keyboard = back_keyb()
             vk.messages.send(user_id=event.obj.message['from_id'],
-                             message='Введите ID',
+                             message='Enter ID',
                              random_id=random.randint(0, 2 ** 64),
                              keyboard=keyboard
                              )
-        elif event.obj.message[
-            'text'] == 'Add user' and admin_board and white_board and not black_board:
+        elif event.obj.message['text'] == 'Add user' and admin_board and white_board and not \
+                black_board and event.obj.message['from_id'] in admins:
             waiting_for_id = True
-            keyboard = waiting_for_id_back()
+            keyboard = back_keyb()
             vk.messages.send(user_id=event.obj.message['from_id'],
-                             message='Введите ID',
+                             message='Enter ID',
                              random_id=random.randint(0, 2 ** 64),
                              keyboard=keyboard
                              )
-        else:
+        elif not waiting_for_imp and not waiting_for_rev and not waiting_for_id and \
+                event.obj.message['text'] != 'Back':
             keyboard = keyb(is_admin)
-            name = \
-                vk_group_session.method("users.get", {"user_ids": event.obj.message['from_id'],
-                                                      "fields": 'online'})[0]['first_name']
-            print('Для меня от:', event.obj.message['from_id'])
-            print('Текст:', event.obj.message['text'])
             vk.messages.send(user_id=event.obj.message['from_id'],
-                             message=f"Привет, {name}",
+                             message='⏬',
                              random_id=random.randint(0, 2 ** 64),
                              keyboard=keyboard
                              )

@@ -1,3 +1,5 @@
+import datetime
+
 from flask import Flask, render_template, redirect, request, abort
 from flask_ngrok import run_with_ngrok
 from flask import Flask, render_template, redirect, request
@@ -142,11 +144,12 @@ def profile():
             photo.save(name)
         except Exception:
             pass
-        for user in session.query(User).filter(User.id == current_user.id):
+        if str(photo) != "<FileStorage: '' ('application/octet-stream')>":
+            user = session.query(User).filter(User.id == current_user.id).first()
             user.photo = name
             user.is_photo = True
             session.commit()
-        return redirect('/profile')
+            return redirect('/profile')
     return render_template('profile.html', name=current_user.name,
                            photo=current_user.photo, email=current_user.email,
                            created_date=str(current_user.created_date).split()[0].split('-'),
@@ -225,10 +228,17 @@ def redact_name():
 def news():
     db_sess = db_session.create_session()
     news = db_sess.query(News)
-    if current_user.is_authenticated:
-        return render_template('news.html', title='Новости',
-                               photo=current_user.photo, news=news, is_photo=current_user.is_photo)
-    return render_template('news.html', title='Новости', news=news, is_photo=current_user.is_photo)
+    arr = []
+    for item in news:
+        delta = datetime.datetime.now() - item.created_date
+        if delta.days != 0:
+            arr.append([item.title, item.content, delta.days, 'days'])
+        elif str(delta).split(':')[0] != 0:
+            arr.append([item.title, item.content, int(str(delta).split(':')[0]), 'hours'])
+        else:
+            arr.append([item.title, item.content, int(str(delta).split(':')[1]), 'minutes'])
+    return render_template('news.html', title='Новости', news=arr, is_photo=current_user.is_photo,
+                           photo=current_user.photo)
 
 
 @app.route('/delete', methods=['GET', 'POST'])
