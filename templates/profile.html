@@ -50,20 +50,16 @@
                     }}.{{ created_date[0] }}</h5>
             </div>
             <div class="d-flex my-4">
-                <h5 class="my-auto">Аватар</h5>
-                <div class="input-group">
-                    <a href="/delete_avatar">
+                <h4>Аватар</h4>
+                <a href="/delete_avatar">
                         <button class="btn-sm btn-warning ms-3" type="button">
                             Удалить
                         </button>
-                    </a>
-                    <input class="form-control form-control-sm bg-secondary simple-btn" type="file" id="formFile">
-                    <a href="/load_photo">
-                        <button class="btn-sm btn-warning ms-3" type="button">
-                            Загрузить
-                        </button>
-                    </a>
-                </div>
+                </a>
+                <form method=post enctype=multipart/form-data>
+                        <p><input type=file name=file>
+                        <button type="submit" class="btn-sm btn-warning ms-3">Загрузить</button>
+                </form>
             </div>
             <div class="d-flex mt-4">
                 <a href="/delete">

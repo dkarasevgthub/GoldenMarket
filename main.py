@@ -1,3 +1,5 @@
+from flask import Flask, render_template, redirect, request, abort
+from flask_ngrok import run_with_ngrok
 from flask import Flask, render_template, redirect, request
 from flask_ngrok import run_with_ngrok
 from flask_wtf import FlaskForm
@@ -7,6 +9,7 @@ from data import db_session, users
 from data.users import User, LoginForm
 from data.news import News
 from forms.user import RegisterForm
+from forms.news import NewsForm
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 
 app = Flask(__name__)
@@ -33,10 +36,6 @@ class RedactPasswordForm(FlaskForm):
 class RedactNameForm(FlaskForm):
     name_new = StringField('Новое имя пользователя', validators=[DataRequired()])
     submit = SubmitField('Изменить данные')
-
-
-class LoadPhotoForm(FlaskForm):
-    submit = SubmitField('Загрузить фотографию')
 
 
 def allowed_file(filename):
@@ -101,7 +100,7 @@ def register():
         user.set_password(form.password.data)
         session.add(user)
         session.commit()
-        return redirect('/')
+        return redirect('/login')
     return render_template('register.html', title='Регистрация', form=form)
 
 
@@ -132,9 +131,22 @@ def logout():
     return redirect("/")
 
 
-@app.route('/profile')
+@app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
+    if request.method == 'POST':
+        session = db_session.create_session()
+        try:
+            photo = request.files['file']
+            name = app.config['UPLOAD_STATIC'] + photo.filename
+            photo.save(name)
+        except Exception:
+            pass
+        for user in session.query(User).filter(User.id == current_user.id):
+            user.photo = name
+            user.is_photo = True
+            session.commit()
+        return redirect('/profile')
     return render_template('profile.html', name=current_user.name,
                            photo=current_user.photo, email=current_user.email,
                            created_date=str(current_user.created_date).split()[0].split('-'),
@@ -209,27 +221,6 @@ def redact_name():
                            form=form, photo=current_user.photo, is_photo=current_user.is_photo)
 
 
-@app.route('/load_photo', methods=['GET', 'POST'])
-@login_required
-def load_photo():
-    form = LoadPhotoForm()
-    if form.validate_on_submit():
-        session = db_session.create_session()
-        try:
-            photo = request.files['file']
-            name = app.config['UPLOAD_STATIC'] + photo.filename
-            photo.save(name)
-        except Exception:
-            pass
-        for user in session.query(User).filter(User.id == current_user.id):
-            user.photo = name
-            user.is_photo = True
-            session.commit()
-        return redirect('/profile')
-    return render_template('load_photo.html', title='Загрузка фотографии',
-                           form=form, photo=current_user.photo)
-
-
 @app.route('/news', methods=['GET', 'POST'])
 def news():
     db_sess = db_session.create_session()
@@ -259,6 +250,55 @@ def delete_avatar():
     user.photo = '-'
     db_sess.commit()
     return redirect('/profile')
+
+
+@app.route('/add_news', methods=['GET', 'POST'])
+@login_required
+def add_news():
+    form = NewsForm()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        news = News()
+        news.title = form.title.data
+        news.content = form.content.data
+        current_user.news.append(news)
+        db_sess.merge(current_user)
+        db_sess.commit()
+        return redirect('/news')
+    return render_template('add_news.html', title='Добавление новости',
+                           form=form, photo=current_user.photo)
+
+
+@app.route('/add_news/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_news(id):
+    form = NewsForm()
+    if request.method == "GET":
+        db_sess = db_session.create_session()
+        news = db_sess.query(News).filter(News.id == id,
+                                          News.user == current_user
+                                          ).first()
+        if news:
+            form.title.data = news.title
+            form.content.data = news.content
+        else:
+            abort(404)
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        news = db_sess.query(News).filter(News.id == id,
+                                          News.user == current_user
+                                          ).first()
+        if news:
+            news.title = form.title.data
+            news.content = form.content.data
+            db_sess.commit()
+            return redirect('/')
+        else:
+            abort(404)
+    return render_template('add_news.html',
+                           title='Редактирование новости',
+                           form=form, photo=current_user.photo
+                           )
 
 
 if __name__ == '__main__':

@@ -13,7 +13,7 @@ class News(SqlAlchemyBase, UserMixin):
     title = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     content = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     created_date = sqlalchemy.Column(sqlalchemy.DateTime,
-                                     default=datetime.datetime.now)
+                                     default=datetime.datetime.now().date())
     user_id = sqlalchemy.Column(sqlalchemy.Integer,
                                 sqlalchemy.ForeignKey("users.id"))
     user = orm.relation('User')

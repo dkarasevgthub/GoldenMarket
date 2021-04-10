@@ -2,17 +2,26 @@
 
 {% block content %}
 <h1>Новости</h1>
+{% if current_user.id == 1 %}
+    <a href="/add_news" class="btn btn-secondary">Добавить новость</a>
+{% endif %}
 {% for item in news%}
-<a href="/terms">
-    <div class="col-md6 border rounded">
-        <h2>{{item.title}}</h2>
-        <div>
-            {{item.content}}
-        </div>
-        <div>
-            {{item.created_date}}
-        </div>
+<div class="col-md6 border rounded">
+    <h2>{{item.title}}</h2>
+    <div>
+        {{item.created_date}}
     </div>
-</a>
+    {% if current_user.id == 1 %}
+    <div>
+        <a href="/add_news/{{ item.id }}" class="btn btn-warning">
+            Изменить
+        </a>
+        <a href="/news_delete/{{ item.id }}" class="btn btn-danger">
+            Удалить
+        </a>
+    </div>
+    {% endif %}
+</div>
+    <p></p>
 {% endfor %}
 {% endblock %}
