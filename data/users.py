@@ -19,7 +19,7 @@ class User(SqlAlchemyBase, UserMixin):
     email = sqlalchemy.Column(sqlalchemy.String,
                               index=True, unique=True, nullable=True)
     photo = sqlalchemy.Column(sqlalchemy.String,
-                              index=True, unique=False, nullable=True)
+                              index=True, unique=False, nullable=True, default='-')
     is_photo = sqlalchemy.Column(sqlalchemy.Boolean,
                                  index=True, unique=False, nullable=True, default=False)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)

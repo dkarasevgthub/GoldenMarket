@@ -7,9 +7,28 @@
     {% else %}
     <div class="text-center mb-4"><h2>Ваш профиль</h2></div>
     <div class="d-flex m-2">
+        {% if current_user.is_photo %}
         <div class="white-border border border-3 rounded-3 m-auto"><img src="{{ photo }}"
-                                                                           width="256"
-                                                                           height="256"></div>
+                                                                        width="256"
+                                                                        height="256"></div>
+        {% else %}
+        <div class="white-border border border-3 rounded-3 m-auto">
+            <svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" fill="currentColor"
+                 style="">
+                <rect id="backgroundrect" width="100%" height="100%" x="0" y="0" fill="none"
+                      stroke="none" class="" style=""/>
+
+
+                <g class="currentLayer" style=""><title>Layer 1</title>
+                    <path d="M193.49710122060674,89.74631658161596 a64.09743764368731,64.09743764368731 0 1 1 -128.19487528737463,0 a64.09743764368731,64.09743764368731 0 0 1 128.19487528737463,0 z"
+                          id="svg_1" class="" fill="#d1d1d1" fill-opacity="1"/>
+                    <path fill-rule="evenodd"
+                          d="M1.1916258250361746,128.02285325019562 a126.66231525670696,126.66231525670696 0 1 1 253.32463051341392,0 A126.66231525670696,126.66231525670696 0 0 1 1.1916258250361746,128.02285325019562 zm126.66231525670696,-110.82952584961863 a110.82952584961863,110.82952584961863 0 0 0 -86.57369247795926,180.0188155585948 C52.52152908281644,179.09943187746262 77.26817892609608,159.68843206437242 127.85394108174319,159.68843206437242 s75.31657920951939,19.39516702368326 86.57369247795926,37.52371089479946 A110.82952584961863,110.82952584961863 0 0 0 127.85394108174319,17.193327400576937 z"
+                          id="svg_2" class="" fill="#d1d1d1" fill-opacity="1"/>
+                </g>
+            </svg>
+        </div>
+        {% endif %}
         <div class="container p-0 text-start mx-3">
             <div class="d-flex mb-4">
                 <h5 class="my-auto">Имя пользователя: {{ name }}</h5>
@@ -33,14 +52,15 @@
             <div class="d-flex my-4">
                 <h5 class="my-auto">Аватар</h5>
                 <div class="input-group">
-                    <a href="/redact">
-                        <button class="btn-sm btn-warning ms-3" type="button"
-                                id="inputGroupFileAddon03">Удалить
+                    <a href="/delete_avatar">
+                        <button class="btn-sm btn-warning ms-3" type="button">
+                            Удалить
                         </button>
                     </a>
+                    <input class="form-control form-control-sm bg-secondary simple-btn" type="file" id="formFile">
                     <a href="/load_photo">
-                        <button class="btn-sm btn-success ms-3" type="button"
-                                id="inputGroupFileAddon03">Загрузить
+                        <button class="btn-sm btn-warning ms-3" type="button">
+                            Загрузить
                         </button>
                     </a>
                 </div>

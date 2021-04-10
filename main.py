@@ -54,7 +54,7 @@ def load_user(user_id):
 def index():
     if current_user.is_authenticated:
         return render_template('startpage.html', title='Главная',
-                               photo=current_user.photo)
+                               photo=current_user.photo, is_photo=current_user.is_photo)
     return render_template('startpage.html', title='Главная')
 
 
@@ -62,8 +62,9 @@ def index():
 def terms():
     if current_user.is_authenticated:
         return render_template('terms.html', title='Положения и гарантии',
-                               photo=current_user.photo)
-    return render_template('terms.html', title='Положения и гарантии')
+                               photo=current_user.photo, is_photo=current_user.is_photo)
+    return render_template('terms.html', title='Положения и гарантии',
+                           is_photo=current_user.is_photo)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -77,8 +78,7 @@ def register():
         if len(form.password.data) <= 8:
             return render_template('register.html', title='Регистрация',
                                    form=form,
-                                   message="Вы ввели короткий пароль \n\n\n"
-                                           "Введите пароль от 8 символов")
+                                   message="Введите пароль от 8 символов")
         session = db_session.create_session()
         if session.query(users.User).filter(
                 users.User.email == form.email.data).first():
@@ -89,21 +89,19 @@ def register():
                 users.User.name == form.name.data).first():
             return render_template('register.html', title='Регистрация',
                                    form=form,
-                                   message="Пользователь с таким именем уже зарегистрирован")
+                                   message="Данное имя пользователя занято")
         if len(form.name.data) <= 4:
             return render_template('register.html', title='Регистрация',
                                    form=form,
-                                   message="Вы ввели короткое имя пользователя \n\n\n"
-                                           "Введите имя от 4 символов")
+                                   message="Слишком короткое имя пользователя")
         user = users.User(
             name=form.name.data,
             email=form.email.data,
-            photo='/static/img/user_new.png'
         )
         user.set_password(form.password.data)
         session.add(user)
         session.commit()
-        return redirect('/login')
+        return redirect('/')
     return render_template('register.html', title='Регистрация', form=form)
 
 
@@ -135,14 +133,16 @@ def logout():
 
 
 @app.route('/profile')
+@login_required
 def profile():
     return render_template('profile.html', name=current_user.name,
                            photo=current_user.photo, email=current_user.email,
                            created_date=str(current_user.created_date).split()[0].split('-'),
-                           title=current_user.name)
+                           title=current_user.name, is_photo=current_user.is_photo)
 
 
 @app.route('/redact_mail', methods=['GET', 'POST'])
+@login_required
 def redact_mail():
     form = RedactMailForm()
     if form.validate_on_submit():
@@ -157,10 +157,11 @@ def redact_mail():
             session.commit()
         return redirect('/profile')
     return render_template('redact_mail.html', title='Редактирование почты', form=form,
-                           photo=current_user.photo)
+                           photo=current_user.photo, is_photo=current_user.is_photo)
 
 
 @app.route('/redact_password', methods=['GET', 'POST'])
+@login_required
 def redact_password():
     form = RedactPasswordForm()
     if form.validate_on_submit():
@@ -172,8 +173,7 @@ def redact_password():
         if len(form.password_new.data) <= 8:
             return render_template('redact_password.html', title='Смена пароля',
                                    form=form,
-                                   message="Вы ввели короткий пароль \n\n\n"
-                                           "Введите пароль от 8 символов")
+                                   message="Введите пароль от 8 символов")
         if form.password_old.data == form.password_new.data:
             return render_template('redact_password.html', title='Смена пароля',
                                    form=form,
@@ -183,10 +183,11 @@ def redact_password():
             session.commit()
         return redirect('/profile')
     return render_template('redact_password.html', title='Смена пароля', form=form,
-                           photo=current_user.photo)
+                           photo=current_user.photo, is_photo=current_user.is_photo)
 
 
 @app.route('/redact_name', methods=['GET', 'POST'])
+@login_required
 def redact_name():
     form = RedactNameForm()
     if form.validate_on_submit():
@@ -195,21 +196,21 @@ def redact_name():
                 users.User.name == form.name_new.data).first():
             return render_template('redact_name.html', title='Редактирование имени пользователя',
                                    form=form,
-                                   message="Пользователь с таким именем уже зарегистрирован")
+                                   message="Данное имя пользователя занято")
         if len(form.name_new.data) <= 4:
             return render_template('redact_name.html', title='Редактирование имени пользователя',
                                    form=form,
-                                   message="Вы ввели короткое имя пользователя \n\n\n"
-                                           "Введите имя от 4 символов")
+                                   message="Слишком короткое имя пользователя")
         for user in session.query(User).filter(User.id == current_user.id):
             user.name = form.name_new.data
             session.commit()
         return redirect('/profile')
     return render_template('redact_name.html', title='Редактирование имени пользователя',
-                           form=form, photo=current_user.photo)
+                           form=form, photo=current_user.photo, is_photo=current_user.is_photo)
 
 
 @app.route('/load_photo', methods=['GET', 'POST'])
+@login_required
 def load_photo():
     form = LoadPhotoForm()
     if form.validate_on_submit():
@@ -222,6 +223,7 @@ def load_photo():
             pass
         for user in session.query(User).filter(User.id == current_user.id):
             user.photo = name
+            user.is_photo = True
             session.commit()
         return redirect('/profile')
     return render_template('load_photo.html', title='Загрузка фотографии',
@@ -234,8 +236,29 @@ def news():
     news = db_sess.query(News)
     if current_user.is_authenticated:
         return render_template('news.html', title='Новости',
-                               photo=current_user.photo, news=news)
-    return render_template('news.html', title='Новости', news=news)
+                               photo=current_user.photo, news=news, is_photo=current_user.is_photo)
+    return render_template('news.html', title='Новости', news=news, is_photo=current_user.is_photo)
+
+
+@app.route('/delete', methods=['GET', 'POST'])
+@login_required
+def delete():
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.id == current_user.id).first()
+    db_sess.delete(user)
+    db_sess.commit()
+    return redirect('/')
+
+
+@app.route('/delete_avatar', methods=['GET', 'POST'])
+@login_required
+def delete_avatar():
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.id == current_user.id).first()
+    user.is_photo = False
+    user.photo = '-'
+    db_sess.commit()
+    return redirect('/profile')
 
 
 if __name__ == '__main__':
