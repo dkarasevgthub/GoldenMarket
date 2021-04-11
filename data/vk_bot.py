@@ -1,3 +1,5 @@
+import datetime
+
 import vk_api
 from vk_api.keyboard import *
 from vk_api.bot_longpoll import *
@@ -106,24 +108,26 @@ for event in longpoll.listen():
             is_admin = True
         else:
             is_admin = False
-        if waiting_for_rev and not admin_board and not waiting_for_imp and event.obj.message[
-            'text'] != 'Back':
+        if waiting_for_rev and not admin_board and not waiting_for_imp and\
+                event.obj.message['text'] != 'Back':
             waiting_for_rev = False
             keyboard = keyb(is_admin)
-            cur.execute(f"INSERT INTO reviews(vk_id, value) "
-                        f"VALUES({event.obj.message['from_id']}, '{event.obj.message['text']}')")
+            cur.execute(f"INSERT INTO reviews(vk_id, value, date) "
+                        f"VALUES({event.obj.message['from_id']}, '{event.obj.message['text']}',"
+                        f" datetime('{datetime.datetime.now()}'))")
             vk.messages.send(user_id=event.obj.message['from_id'],
                              message="Thanks for your review!",
                              random_id=random.randint(0, 2 ** 64),
                              keyboard=keyboard
                              )
             con.commit()
-        if waiting_for_imp and not admin_board and not waiting_for_rev and event.obj.message[
-            'text'] != 'Back':
+        if waiting_for_imp and not admin_board and not waiting_for_rev\
+                and event.obj.message['text'] != 'Back':
             waiting_for_imp = False
             keyboard = keyb(is_admin)
-            cur.execute(f"INSERT INTO improvements(vk_id, value) "
-                        f"VALUES({event.obj.message['from_id']}, '{event.obj.message['text']}')")
+            cur.execute(f"INSERT INTO improvements(vk_id, value, date) "
+                        f"VALUES({event.obj.message['from_id']}, '{event.obj.message['text']}',"
+                        f" datetime('{datetime.datetime.now()}'))")
             vk.messages.send(user_id=event.obj.message['from_id'],
                              message="Thanks for your improvement!",
                              random_id=random.randint(0, 2 ** 64),
@@ -339,7 +343,7 @@ for event in longpoll.listen():
                                  )
         elif event.obj.message['text'] == 'Downgrade' and admin_board and white_board and not \
                 black_board and event.obj.message['from_id'] in admins:
-            if int(event.obj.message['text'].split()[1][1:-1]) != event.obj.message['from_id'] and \
+            if event.obj.message['payload'] != event.obj.message['from_id'] and \
                     int(event.obj.message['payload']) not in EXCEPTIONS:
                 del admins[admins.index(int(event.obj.message['payload']))]
                 cur.execute(f"DELETE from permissions\n"

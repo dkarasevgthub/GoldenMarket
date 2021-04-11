@@ -1,18 +1,19 @@
 import datetime
-from flask import Flask, render_template, redirect, request, abort
-from flask_ngrok import run_with_ngrok
-from flask import Flask, render_template, redirect, request
-from flask_ngrok import run_with_ngrok
-from flask_wtf import FlaskForm
-from wtforms import PasswordField, SubmitField, StringField
-from wtforms.validators import DataRequired
-from data import db_session, users
-from data.users import User, LoginForm
-from data.news import News
-from forms.user import RegisterForm
-from forms.news import NewsForm
-from flask_login import LoginManager, login_user, logout_user, current_user, login_required
+import sqlite3
+
 import requests
+import vk_api
+from flask import Flask, render_template, redirect, request
+from flask import abort
+from flask_login import LoginManager, login_user, logout_user, current_user, login_required
+from flask_ngrok import run_with_ngrok
+
+from data import db_session, users
+from data.news import News
+from data.users import User, LoginForm
+from forms.news import NewsForm
+from forms.user import RegisterForm
+from forms.edit import RedactMailForm, RedactNameForm, RedactPasswordForm
 
 app = Flask(__name__)
 login_manager = LoginManager()
@@ -22,22 +23,10 @@ app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 UPLOAD_STATIC = 'static/img/'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_STATIC'] = UPLOAD_STATIC
-
-
-class RedactMailForm(FlaskForm):
-    email_new = StringField('Новая почта', validators=[DataRequired()])
-    submit = SubmitField('Изменить данные')
-
-
-class RedactPasswordForm(FlaskForm):
-    password_old = PasswordField('Старый пароль', validators=[DataRequired()])
-    password_new = PasswordField('Новый пароль', validators=[DataRequired()])
-    submit = SubmitField('Изменить данные')
-
-
-class RedactNameForm(FlaskForm):
-    name_new = StringField('Новое имя пользователя', validators=[DataRequired()])
-    submit = SubmitField('Изменить данные')
+edit_mode = False
+ADMINS = [1, 2]
+GROUP_TOKEN = '362ed726c14963a17c777db697e93fb0c371c60' \
+              '71bd08be014138bfdef0bbcbbe2755016e25bda6143739'
 
 
 def allowed_file(filename):
@@ -217,18 +206,34 @@ def redact_name():
 
 @app.route('/news', methods=['GET', 'POST'])
 def news():
+    global edit_mode
     db_sess = db_session.create_session()
     news = db_sess.query(News)
     arr = []
     for item in news:
         delta = datetime.datetime.now() - item.created_date
         if delta.days != 0:
-            arr.append([item.title, item.content, delta.days, 'days'])
-        elif str(delta).split(':')[0] != 0:
-            arr.append([item.title, item.content, int(str(delta).split(':')[0]), 'hours'])
+            arr.append([item.title, item.content, delta.days, 'days', item.id])
+        elif int(str(delta).split()[0].split(':')[0]) != 0:
+            arr.append(
+                [item.title, item.content, int(str(delta).split()[0].split(':')[0]), 'hours',
+                 item.id])
         else:
-            arr.append([item.title, item.content, int(str(delta).split(':')[1]), 'minutes'])
-    return render_template('news.html', title='Новости', news=arr, is_photo=current_user.is_photo,
+            arr.append([item.title, item.content,
+                        int(str(delta).split()[0].split(':')[1]), 'minutes', item.id])
+    return render_template('news.html', title='Новости', news=arr[::-1],
+                           is_photo=current_user.is_photo,
+                           photo=current_user.photo, edit_mode=edit_mode, ADMINS=ADMINS)
+
+
+@app.route('/news_edit')
+@login_required
+def news_edit_mode():
+    if current_user.id in ADMINS:
+        global edit_mode
+        edit_mode = not edit_mode
+        return redirect('/news')
+    return render_template('no_perm.html', title='Ошибка', is_photo=current_user.is_photo,
                            photo=current_user.photo)
 
 
@@ -253,66 +258,140 @@ def delete_avatar():
     return redirect('/profile')
 
 
+@app.route('/delete_news/<int:id>')
+@login_required
+def delete_news(id):
+    if current_user.id in ADMINS:
+        db_sess = db_session.create_session()
+        news = db_sess.query(News).filter(News.id == id).first()
+        db_sess.delete(news)
+        db_sess.commit()
+        return redirect('/news')
+    return render_template('no_perm.html', title='Ошибка', is_photo=current_user.is_photo,
+                           photo=current_user.photo)
+
+
 @app.route('/add_news', methods=['GET', 'POST'])
 @login_required
 def add_news():
-    form = NewsForm()
-    if form.validate_on_submit():
-        db_sess = db_session.create_session()
-        news = News()
-        news.title = form.title.data
-        news.content = form.content.data
-        current_user.news.append(news)
-        db_sess.merge(current_user)
-        db_sess.commit()
-        return redirect('/news')
-    return render_template('add_news.html', title='Добавление новости',
-                           form=form, photo=current_user.photo)
-
-
-@app.route('/add_news/<int:id>', methods=['GET', 'POST'])
-@login_required
-def edit_news(id):
-    form = NewsForm()
-    if request.method == "GET":
-        db_sess = db_session.create_session()
-        news = db_sess.query(News).filter(News.id == id,
-                                          News.user == current_user
-                                          ).first()
-        if news:
-            form.title.data = news.title
-            form.content.data = news.content
-        else:
-            abort(404)
-    if form.validate_on_submit():
-        db_sess = db_session.create_session()
-        news = db_sess.query(News).filter(News.id == id,
-                                          News.user == current_user
-                                          ).first()
-        if news:
+    if current_user.id in ADMINS:
+        form = NewsForm()
+        if form.validate_on_submit():
+            db_sess = db_session.create_session()
+            news = News()
             news.title = form.title.data
             news.content = form.content.data
+            news.created_date = datetime.datetime.now()
+            current_user.news.append(news)
+            db_sess.merge(current_user)
             db_sess.commit()
-            return redirect('/')
-        else:
-            abort(404)
-    return render_template('add_news.html',
-                           title='Редактирование новости',
-                           form=form, photo=current_user.photo
-                           )
+            return redirect('/news')
+        return render_template('add_news.html', title='Добавление новости',
+                               form=form, photo=current_user.photo, is_photo=current_user.is_photo)
+    return render_template('no_perm.html', title='Ошибка', is_photo=current_user.is_photo,
+                           photo=current_user.photo)
+
+
+@app.route('/edit_news/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_news(id):
+    if current_user.id in ADMINS:
+        form = NewsForm()
+        if request.method == "GET":
+            db_sess = db_session.create_session()
+            news = db_sess.query(News).filter(News.id == id,
+                                              News.user == current_user
+                                              ).first()
+            if news:
+                form.title.data = news.title
+                form.content.data = news.content
+            else:
+                abort(404)
+        if form.validate_on_submit():
+            db_sess = db_session.create_session()
+            news = db_sess.query(News).filter(News.id == id,
+                                              News.user == current_user
+                                              ).first()
+            if news:
+                news.title = form.title.data
+                news.content = form.content.data
+                news.created_date = datetime.datetime.now()
+                db_sess.commit()
+                return redirect('/')
+            else:
+                abort(404)
+        return render_template('add_news.html',
+                               title='Редактирование новости',
+                               form=form, photo=current_user.photo, edit=True)
+    return render_template('no_perm.html', title='Ошибка', is_photo=current_user.is_photo,
+                           photo=current_user.photo)
 
 
 @app.route('/contacts')
 def contacts():
-    map = "https://static-maps.yandex.ru/1.x/" \
-                  "?ll=40.685741%2C55.614897&z=17&l=map&pt=40.685741%2C55.614897"
-    response = requests.get(map)
-    map_photo = "static/img/map_photo.png"
-    with open(map_photo, "wb") as file:
-        file.write(response.content)
-    if current_user.is_authenticated:
-        return render_template('contacts.html', photo=current_user.photo, filename=map_photo)
-    return render_template('contacts.html', filename=map_photo)
+    ymap = "static/img/map_photo.png"
+    return render_template('contacts.html', filename=ymap, photo=current_user.photo,
+                           title='Контакты', is_photo=current_user.is_photo)
+
+
+@app.route('/improvements')
+@login_required
+def impr():
+    if current_user.id in ADMINS:
+        con = sqlite3.connect('db/vkbot.db')
+        cur = con.cursor()
+        vk_group_session = vk_api.VkApi(token=GROUP_TOKEN)
+        data = cur.execute('SELECT * FROM improvements').fetchall()
+        arr = []
+        for item in data:
+            delta = datetime.datetime.now() - datetime.datetime.strptime(item[2],
+                                                                         '%Y-%m-%d %H:%M:%S')
+            user = \
+            vk_group_session.method("users.get", {"user_ids": item[0], "fields": "photo_50"})[0]
+            if delta.days != 0:
+                arr.append(
+                    [[user['first_name'], user['last_name'], item[0], user['photo_50']], item[1],
+                     delta.days, 'days'])
+            elif int(str(delta).split()[0].split(':')[0]) != 0:
+                arr.append(
+                    [[user['first_name'], user['last_name'], item[0], user['photo_50']], item[1],
+                     int(str(delta).split(':')[0]), 'hours'])
+            else:
+                arr.append(
+                    [[user['first_name'], user['last_name'], item[0], user['photo_50']], item[1],
+                     int(str(delta).split(':')[1]), 'minutes'])
+        return render_template('reviews.html', title='Отзывы', reviews=arr[::-1],
+                               is_photo=current_user.is_photo,
+                               photo=current_user.photo, impr=True)
+    return render_template('no_perm.html', title='Ошибка', is_photo=current_user.is_photo,
+                           photo=current_user.photo)
+
+
+@app.route('/reviews')
+def reviews():
+    con = sqlite3.connect('db/vkbot.db')
+    cur = con.cursor()
+    vk_group_session = vk_api.VkApi(token=GROUP_TOKEN)
+    data = cur.execute('SELECT * FROM reviews').fetchall()
+    arr = []
+    for item in data:
+        delta = datetime.datetime.now() - datetime.datetime.strptime(item[2], '%Y-%m-%d %H:%M:%S')
+        user = vk_group_session.method("users.get", {"user_ids": item[0], "fields": "photo_50"})[0]
+        if delta.days != 0:
+            arr.append(
+                [[user['first_name'], user['last_name'], item[0], user['photo_50']], item[1],
+                 delta.days, 'days'])
+        elif int(str(delta).split()[0].split(':')[0]) != 0:
+            arr.append(
+                [[user['first_name'], user['last_name'], item[0], user['photo_50']], item[1],
+                 int(str(delta).split(':')[0]), 'hours'])
+        else:
+            arr.append(
+                [[user['first_name'], user['last_name'], item[0], user['photo_50']], item[1],
+                 int(str(delta).split(':')[1]), 'minutes'])
+    return render_template('reviews.html', title='Отзывы', reviews=arr,
+                           is_photo=current_user.is_photo,
+                           photo=current_user.photo, ADMINS=ADMINS)
 
 
 if __name__ == '__main__':

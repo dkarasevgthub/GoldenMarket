@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container w-25 bg-dark rounded-3 mt-3 p-3 text-center">
+    {% if impr %}
+    <h2 class="mb-3 simple-btn">Предложения</h2>
+    {% else %}
+    <h2 class="mb-3 simple-btn">Отзывы</h2>
+    {% endif %}
+    {% if current_user.id in ADMINS and not impr %}
+    <div class="w-50 p-2 mx-auto">
+        <a href="/improvements">
+            <button type="button" class="btn btn-outline-primary mx-2 px-5">
+                Предложения
+            </button>
+        </a>
+    </div>
+    {% endif %}
+    {% if reviews %}
+    {% for item in reviews %}
+    <div class="card text-center m-4 bg-dark rounded-3 border-success">
+        <a href="https://vk.com/id{{ item[0][2] }}" target="_blank">
+            <div class="card-header bg-success">
+                <img src="{{ item[0][3] }}" width="30" height="30" class="rounded-circle">
+                {{ item[0][0] }} {{ item[0][1] }}
+            </div>
+        </a>
+        <div class="card-body border border-success">
+            <h6 class="card-text mx-auto text-start">{{ item[1] }}</h6>
+        </div>
+        <div class="card-footer">
+            {{ item[2] }} {{ item[3] }} ago
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <h4 class="my-5">Здесь пока ничего нет</h4>
+    {% endif%}
+</div>
+{% endblock %}

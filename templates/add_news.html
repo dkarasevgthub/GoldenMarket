@@ -1,28 +1,38 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Добавление новости</h1>
-<form action="" method="post">
-    {{ form.hidden_tag() }}
-    <p>
-        {{ form.title.label }}<br>
-        {{ form.title(class="form-control") }}<br>
-        {% for error in form.title.errors %}
-            <p class="alert alert-danger" role="alert">
+<div class="container w-25 bg-dark rounded-3 mt-3 p-3 text-center">
+    {% if edit %}
+    <h2 class="simple-btn">Редактирование новости</h2>
+    {% else %}
+    <h2 class="simple-btn">Добавление новости</h2>
+    {% endif %}
+    <form action="" method="post">
+        <div class="mx-auto p-0">
+            {{ form.hidden_tag() }}
+            <div class="container-fluid my-4">
+                {{ form.title.label }}
+                {{ form.title(class="form-control") }}
+                {% for error in form.title.errors %}
                 {{ error }}
-            </p>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.content.label }}<br>
-        {{ form.content(class="form-control") }}<br>
-        {% for error in form.content.errors %}
-            <p content="alert alert-danger" role="alert">
+                {% endfor %}
+            </div>
+            <div class="container-fluid my-4">
+                {{ form.content.label }}
+                {{ form.content(class="form-control") }}
+                {% for error in form.content.errors %}
                 {{ error }}
-            </p>
-        {% endfor %}
-    </p>
-    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
-    {{message}}
-</form>
+                {% endfor %}
+            </div>
+            <div class="container-fluid my-4">
+                {{ form.submit(type="submit", class="btn btn-primary") }}
+            </div>
+            {% if message|length > 1 %}
+            <div class="alert alert-danger mt-2">
+                {{message}}
+            </div>
+            {% endif %}
+        </div>
+    </form>
+</div>
 {% endblock %}

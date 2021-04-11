@@ -28,12 +28,12 @@
             color: #d1d1d1;
         }
 
-        .white-border {
-            border-color: #d1d1d1 !important;
+        body {
+            background-color: #4e5761;
         }
 
-        .title-color {
-            color: #198754!important;
+        .white-border {
+            border-color: #d1d1d1 !important;
         }
 
         .simple-btn {
@@ -44,22 +44,26 @@
             color: #212529 !important;
         }
 
+        .text-primary {
+            color: #0d6efd !important;
+        }
+
         img {
             max-width:100%;
             height: 100%;
         }
 
+
     </style>
     <title>{{ title }}</title>
 </head>
-<body class="container-fluid p-0"
-      style="background-color: #4e5761;">
+<body class="container-fluid p-0">
 <header class="container-fluid bg-dark p-0 m-0">
     <nav class="navbar navbar-white bg-dark p-0 m-0 w-50 mx-auto">
-        <div class="navbar-brand text-center m-2 p-0 title-color">
+        <div class="navbar-brand text-center m-2 p-0">
             <a href="/">
                 <img src="{{ url_for('static', filename='img/site-logo.png') }}"
-                     class="mx-auto" width="50" height="50">
+                     class="me-1" width="50" height="50">
             </a>
             GOLDEN MARKET
         </div>
@@ -75,20 +79,21 @@
                 <img src="{{ photo }}" width="40" height="40"
                      class="rounded-circle border border-3 border-success">
                 {% else %}
-                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor"
+                     style="">
                     <rect id="backgroundrect" width="100%" height="100%" x="0" y="0" fill="none"
-                          stroke="none"/>
-                    <g class="currentLayer" style="">
+                          stroke="none" class="" style=""/>
+                    <g class="currentLayer" style=""><title>Layer 1</title>
                         <path d="M29.673590507069914,14.905141701277778 a9.538625579103858,9.538625579103858 0 1 1 -19.077251158207716,0 a9.538625579103858,9.538625579103858 0 0 1 19.077251158207716,0 z"
-                              id="svg_1" fill="#d1d1d1" fill-opacity="1"/>
+                              id="svg_1" class="" fill="#198754" fill-opacity="1"/>
                         <path fill-rule="evenodd"
                               d="M0.1423707085346423,20.03248205185983 a19.91570219863874,19.91570219863874 0 1 1 39.83140439727748,0 A19.91570219863874,19.91570219863874 0 0 1 0.1423707085346423,20.03248205185983 zm19.91570219863874,-17.4262394238089 a17.4262394238089,17.4262394238089 0 0 0 -13.612382452769586,28.305191749815314 C8.213209024532947,28.0634889634609 12.104239341592073,25.011407601519522 20.058072907173383,25.011407601519522 s11.842374419865562,3.0495918991665585 13.612382452769586,5.90002677634673 A17.4262394238089,17.4262394238089 0 0 0 20.058072907173383,2.606242628050928 z"
-                              id="svg_2" fill="#d1d1d1" fill-opacity="1"/>
+                              id="svg_2" class="" fill="#198754" fill-opacity="1"/>
                     </g>
                 </svg>
                 {% endif %}
             </button>
-            <div class="white-border dropdown-menu bg-dark border-3 rounded-3"
+            <div class="dropdown-menu bg-dark border-success border-3 rounded-3"
                  aria-labelledby="dropdownMenuButton;dropdownMenuLabel">
                 <a class="simple-btn dropdown-item" href="/profile">Профиль</a>
                 <hr class="simple-btn dropdown-divider m-1">
@@ -112,23 +117,23 @@
     </nav>
 </header>
 <main>
-    <div class="container-fluid w-50 mt-3 p-0 text-center rounded-lg">
-        <a href="/" class="mx-2">
+    <div class="container-fluid w-50 mt-3 p-0 text-center rounded-3">
+        <a href="/" class="mx-1">
             <button class="simple-btn btn btn-dark px-4 py-2">Главная</button>
         </a>
-        <a href="/news" class="mx-2">
-            <button class="simple-btn btn btn-dark px-5 py-2">Новости</button>
+        <a href="/news" class="mx-1">
+            <button class="simple-btn btn btn-dark px-4 py-2">Новости</button>
         </a>
-        <a href="/accounts" class="mx-2">
-            <button class="simple-btn btn btn-dark mx-auto px-5 py-2">Аккаунты</button>
+        <a href="/accounts" class="mx-1">
+            <button class="simple-btn btn btn-dark mx-auto px-4 py-2">Аккаунты</button>
         </a>
-        <a class="mx-2" href="https://vk.com/topic-203487503_47479685" target="_blank">
-            <button class="simple-btn btn btn-dark px-5 py-2">Отзывы</button>
+        <a class="mx-auto" href="/reviews">
+            <button class="simple-btn btn btn-dark px-4 py-2">Отзывы</button>
         </a>
-        <a class="mx-2" href="/contacts" target="_blank">
-            <button class="simple-btn btn btn-dark px-5 py-2">Связь с нами</button>
+        <a href="/contacts" class="mx-1">
+            <button class="simple-btn btn btn-dark px-4 py-2">Контакты</button>
         </a>
-        <a href="https://vk.com/public203487503" class="mx-2" target="_blank">
+        <a href="https://vk.com/public203487503" class="mx-1" target="_blank">
             <button class="btn btn-dark px-3 py-2">
                 <i class="fa fa-vk w-100" aria-hidden="true"></i>
             </button>
