@@ -1,5 +1,4 @@
 import datetime
-
 from flask import Flask, render_template, redirect, request, abort
 from flask_ngrok import run_with_ngrok
 from flask import Flask, render_template, redirect, request
@@ -13,6 +12,7 @@ from data.news import News
 from forms.user import RegisterForm
 from forms.news import NewsForm
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
+import requests
 
 app = Flask(__name__)
 login_manager = LoginManager()
@@ -57,15 +57,6 @@ def index():
         return render_template('startpage.html', title='Главная',
                                photo=current_user.photo, is_photo=current_user.is_photo)
     return render_template('startpage.html', title='Главная')
-
-
-@app.route('/terms')
-def terms():
-    if current_user.is_authenticated:
-        return render_template('terms.html', title='Положения и гарантии',
-                               photo=current_user.photo, is_photo=current_user.is_photo)
-    return render_template('terms.html', title='Положения и гарантии',
-                           is_photo=current_user.is_photo)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -309,6 +300,19 @@ def edit_news(id):
                            title='Редактирование новости',
                            form=form, photo=current_user.photo
                            )
+
+
+@app.route('/contacts')
+def contacts():
+    map = "https://static-maps.yandex.ru/1.x/" \
+                  "?ll=40.685741%2C55.614897&z=17&l=map&pt=40.685741%2C55.614897"
+    response = requests.get(map)
+    map_photo = "static/img/map_photo.png"
+    with open(map_photo, "wb") as file:
+        file.write(response.content)
+    if current_user.is_authenticated:
+        return render_template('contacts.html', photo=current_user.photo, filename=map_photo)
+    return render_template('contacts.html', filename=map_photo)
 
 
 if __name__ == '__main__':
