@@ -1,26 +1,23 @@
 import datetime
 import sqlite3
-
-import requests
 import vk_api
 from flask import Flask, render_template, redirect, request
 from flask import abort
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from flask_ngrok import run_with_ngrok
-
-from data import db_session, users
+from data import db_session, users, accounts
 from data.news import News
 from data.users import User, LoginForm
 from forms.news import NewsForm
 from forms.user import RegisterForm
-from forms.edit import RedactMailForm, RedactNameForm, RedactPasswordForm
+from forms.edit import RedactMailForm, RedactNameForm, RedactPasswordForm, MarketForm
 
 app = Flask(__name__)
 login_manager = LoginManager()
 login_manager.init_app(app)
 run_with_ngrok(app)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
-UPLOAD_STATIC = 'static/img/'
+UPLOAD_STATIC = 'static/img/user_avatars/'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_STATIC'] = UPLOAD_STATIC
 edit_mode = False
@@ -221,9 +218,11 @@ def news():
         else:
             arr.append([item.title, item.content,
                         int(str(delta).split()[0].split(':')[1]), 'minutes', item.id])
+        if current_user.is_authenticated:
+            return render_template('news.html', title='Новости', news=arr[::-1],
+                                   photo=current_user.photo, edit_mode=edit_mode, ADMINS=ADMINS)
     return render_template('news.html', title='Новости', news=arr[::-1],
-                           is_photo=current_user.is_photo,
-                           photo=current_user.photo, edit_mode=edit_mode, ADMINS=ADMINS)
+                           ADMINS=ADMINS)
 
 
 @app.route('/news_edit')
@@ -392,6 +391,135 @@ def reviews():
     return render_template('reviews.html', title='Отзывы', reviews=arr,
                            is_photo=current_user.is_photo,
                            photo=current_user.photo, ADMINS=ADMINS)
+
+
+@app.route('/market', methods=['POST', 'GET'])
+def market():
+    session = db_session.create_session()
+    account_session = session.query(accounts.Accounts).all()
+    account_dict = {}
+    for account in account_session[::-1]:
+        account_dict[account.title] = [account.price, account.count, account.link,
+                                       account.user_name, account.type, account.id,
+                                       account.created_date, account.about_acc]
+    if current_user.is_authenticated:
+        return render_template('market.html', name=current_user.name,
+                               photo=current_user.photo, account_dict=account_dict)
+    return render_template('market.html', account_dict=account_dict)
+
+
+@login_required
+@app.route('/add_acc', methods=['POST', 'GET'])
+def add_item():
+    form = MarketForm()
+    if form.validate_on_submit():
+        session = db_session.create_session()
+        acc = accounts.Accounts()
+        if len(form.name.data) <= 5:
+            return render_template('add_acc.html', form=form,
+                                   name=current_user.name, photo=current_user.photo,
+                                   message='Вы ввели слишком короткое название аккаунта.'
+                                           'Введите название от 5 символов')
+        acc.title = form.name.data
+        acc.type = form.category.data
+        acc.link = form.link.data
+        acc.price = form.price.data
+        acc.count = form.count.data
+        acc.user_name = current_user.name
+        acc.about_acc = form.about.data
+        session.add(acc)
+        session.commit()
+        account_session = session.query(accounts.Accounts).all()
+        account_dict = {}
+        for account in account_session:
+            account_dict[account.title] = [account.price, account.count, account.link,
+                                           account.user_name, account.type, account.id,
+                                           account.created_date, account.about_acc]
+        return redirect('/market')
+    return render_template('add_acc.html',
+                           name=current_user.name,
+                           photo=current_user.photo, form=form)
+
+
+@app.route('/edit_acc/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_item(id):
+    form = MarketForm()
+    if request.method == 'GET':
+        session = db_session.create_session()
+        account_session =\
+            session.query(accounts.Accounts).filter(accounts.Accounts.id == id).first()
+        if account_session:
+            form.name.data = account_session.title
+            form.category.data = account_session.type
+            form.link.data = account_session.link
+            form.price.data = account_session.price
+            form.count.data = account_session.count
+            form.about.data = account_session.about_acc
+        else:
+            abort(404)
+    if form.validate_on_submit():
+        session = db_session.create_session()
+        account_session = session.query(accounts.Accounts).filter(accounts.Accounts.id == id).first()
+        if account_session:
+            account_session.title = form.name.data
+            account_session.type = form.category.data
+            account_session.link = form.link.data
+            account_session.price = form.price.data
+            account_session.count = form.count.data
+            account_session.about_acc = form.about.data
+            session.commit()
+            return redirect('/market')
+        else:
+            abort(404)
+    return render_template('add_acc.html', form=form,
+                           name=current_user.name, photo=current_user.photo)
+
+
+@app.route('/delete_acc/<int:id>', methods=['GET', 'POST'])
+@login_required
+def item_delete(id):
+    session = db_session.create_session()
+    account_session = session.query(accounts.Accounts).filter(accounts.Accounts.id == id).first()
+    if account_session:
+        session.delete(account_session)
+        session.commit()
+    else:
+        abort(404)
+    return redirect('/market')
+
+
+@app.route('/market/<category>', methods=['POST', 'GET'])   
+def sorted_market(category):
+    session = db_session.create_session()
+    if category == 'vk':
+        account_session = session.query(accounts.Accounts).filter(accounts.Accounts.type
+                                                                  == 'VK')
+    elif category == 'steam':
+        account_session = session.query(accounts.Accounts).filter(accounts.Accounts.type
+                                                                  == 'Steam')
+    elif category == 'instagram':
+        account_session = session.query(accounts.Accounts).filter(accounts.Accounts.type
+                                                                  == 'Instagram')
+    elif category == 'origin':
+        account_session = session.query(accounts.Accounts).filter(accounts.Accounts.type
+                                                                  == 'Origin')
+    elif category == 'mail':
+        account_session = session.query(accounts.Accounts).filter(accounts.Accounts.type
+                                                                  == 'Mail')
+    else:
+        account_session = session.query(accounts.Accounts).filter(accounts.Accounts.type
+                                                                  == 'Other')
+    account_dict = {}
+    for account in account_session[::-1]:
+        account_dict[account.title] = [account.price, account.count, account.link,
+                                       account.user_name, account.type, account.id,
+                                       account.created_date, account.about_acc]
+    if current_user.is_authenticated:
+        return render_template('market.html',
+                               name=current_user.name,
+                               photo=current_user.photo, account_dict=account_dict)
+    return render_template('market.html', account_dict=account_dict)
 
 
 if __name__ == '__main__':

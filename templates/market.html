@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container w-50 bg-dark rounded-3 mt-3 p-3 text-center">
+    {% if current_user.is_authenticated %}
+        <a href="/add_acc">
+            <button type="button" class="btn btn-success" style="margin-bottom: 20px;margin-right: 24px;margin-top: 30px;">
+                Выставить аккаунт на продажу
+            </button>
+        </a>
+    {% endif %}
+    <h4>Сортировка аккаунтов:</h4>
+    <a href="/market"><button type="button" style="color: black">All</button></a>
+    <a href="/market/vk"><button type="button" style="color: black">VK</button></a>
+    <a href="/market/steam"><button type="button" style="color: black">Steam</button></a>
+    <a href="/market/instagram"><button type="button" style="color: black">Inst</button></a>
+    <a href="/market/origin"><button type="button" style="color: black">Origin</button></a>
+    <a href="/market/mail"><button type="button" style="color: black">Mail</button></a>
+    <a href="/market/other"><button type="button" style="color: black">Other</button></a>
+</div>
+    {% for account in account_dict %}
+        <div class="container w-50 bg-dark rounded-3 mt-3 p-3" >
+            <p style="text-align: center; color: white;">{{account}} - {{account_dict[account][4]}}</p>
+            <p style="text-align: center; color: white;">{{account_dict[account][7]}}</p>
+            {% if account_dict[account][1] == 1 %}
+                <p style=' color: white;'>Цена: {{account_dict[account][0]}} руб. <br> Продавец: {{account_dict[account][3]}}</p>
+            {% else %}
+                <p style=' color: white;'>Цена: {{account_dict[account][0]}} руб. ; Количество: {{account_dict[account][1]}}<br>Продавец: {{account_dict[account][3]}}</p>
+            {% endif %}
+            <p style=' color: white;'>Дата размещения - {{account_dict[account][6]}}</p>
+            <a target="_blank" href="{{account_dict[account][2]}}" class="btn btn-primary">Написать продавцу</a>
+            {% if current_user.name == 'admin' or current_user.name == account_dict[account][3] %}
+            <a href="/edit_acc/{{account_dict[account][5]}}" class="my-auto">
+                <button type="button" class="btn btn-outline-success mx-2 px-4">
+                    Редактировать
+                </button>
+            </a>
+            <a href="/delete_acc/{{account_dict[account][5]}}" class="my-auto">
+                <button type="button" class="btn btn-outline-warning mx-2 px-4">
+                    Удалить
+                </button>
+            </a>
+            {% endif %}
+        </div>
+    {% endfor %}
+{% endblock %}
