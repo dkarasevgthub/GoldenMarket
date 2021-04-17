@@ -1,1 +1,1 @@
-from . import users, news
+from . import users, news   # импортируем базу данных пользователей и новостей

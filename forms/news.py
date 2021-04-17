@@ -4,7 +4,7 @@ from wtforms import SubmitField
 from wtforms.validators import DataRequired
 
 
-class NewsForm(FlaskForm):
+class NewsForm(FlaskForm):   # форма новостей
     title = StringField('Заголовок', validators=[DataRequired()])
     content = TextAreaField("Содержание")
     submit = SubmitField('Применить')

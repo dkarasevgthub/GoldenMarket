@@ -4,7 +4,7 @@ from flask_login import UserMixin
 import datetime
 
 
-class Accounts(SqlAlchemyBase, UserMixin):
+class Accounts(SqlAlchemyBase, UserMixin):   # таблица аккаунтов
     __tablename__ = 'accounts'
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True, unique=True)
     created_date = sqlalchemy.Column(sqlalchemy.DateTime,

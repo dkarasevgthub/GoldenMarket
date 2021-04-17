@@ -3,23 +3,23 @@ from wtforms import PasswordField, SubmitField, StringField, SelectField
 from wtforms.validators import DataRequired
 
 
-class RedactMailForm(FlaskForm):
+class RedactMailForm(FlaskForm):   # форма редактирования почты
     email_new = StringField('Новая почта', validators=[DataRequired()])
     submit = SubmitField('Изменить данные')
 
 
-class RedactPasswordForm(FlaskForm):
+class RedactPasswordForm(FlaskForm):   # форма редактирования пароля
     password_old = PasswordField('Старый пароль', validators=[DataRequired()])
     password_new = PasswordField('Новый пароль', validators=[DataRequired()])
     submit = SubmitField('Изменить данные')
 
 
-class RedactNameForm(FlaskForm):
+class RedactNameForm(FlaskForm):   # форма редактирования имени пользователя
     name_new = StringField('Новое имя пользователя', validators=[DataRequired()])
     submit = SubmitField('Изменить данные')
 
 
-class MarketForm(FlaskForm):
+class MarketForm(FlaskForm):   # форма маркета
     name = StringField('Название товара:')
     category = SelectField('Категория:',
                            choices=[('VK', 'VK'), ('Steam', 'Steam'),
@@ -35,5 +35,5 @@ class MarketForm(FlaskForm):
                                  ('19', '19'), ('20', '20')])
     about = StringField('Описание аккаунта:')
     price = StringField('Цена аккаунта(ов):')
-    link = StringField('Ссылка на ваши контакты (ВК, Инстаграм и др):')
+    link = StringField('Ссылка на ваши контакты (ВК, Инстаграм и др) с протоколом https:')
     submit = SubmitField('Выставить на продажу')

@@ -7,7 +7,7 @@
             {{ form.hidden_tag() }}
             <p style="color: white">
                 {{ form.name.label }}<br>
-                {{ form.name(class="form-control", style='color: black') }}<br>
+                {{ form.name(class="form-control", placeholder='Аккаунт с 1000+ друзей', style='color: black') }}<br>
                 {% for error in form.name.errors %}
                     <div style="color: red">
                         {{ error }}
@@ -16,7 +16,7 @@
             </p>
             <p style="color: white">
                 {{ form.about.label }}<br>
-                {{ form.about(class="form-control", style='color: black') }}<br>
+                {{ form.about(class="form-control", placeholder='На аккаунте более 1000 друзей, закрытый профиль. Подходит для скама или спама.', style='color: black') }}<br>
                 {% for error in form.about.errors %}
                     <div style="color: red">
                         {{ error }}
@@ -32,17 +32,15 @@
                     </div>
                 {% endfor %}
             </p>
-
             <p style="color: white">
                 {{ form.link.label }}<br>
-                {{ form.link(class="form-control", style='color: black') }}<br>
+                {{ form.link(class="form-control", placeholder='https://www.instagram.com/dirtymorty', style='color: black') }}<br>
                 {% for error in form.link.errors %}
                     <div  style="color: red">
                         {{ error }}
                     </div>
                 {% endfor %}
             </p>
-
             <p style="color: white">
                 {{ form.price.label }}<br>
                 {{ form.price(class="form-control", style='color: black') }}<br>
@@ -52,7 +50,6 @@
                     </div>
                 {% endfor %}
             </p>
-
             <p style="color: white">
                 {{ form.count.label }}<br>
                 {{ form.count(class="form-control", style='color: black') }}<br>

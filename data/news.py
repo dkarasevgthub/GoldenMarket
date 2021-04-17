@@ -5,7 +5,7 @@ from flask_login import UserMixin
 from sqlalchemy import orm
 
 
-class News(SqlAlchemyBase, UserMixin):
+class News(SqlAlchemyBase, UserMixin):  # таблица новостей
     __tablename__ = 'news'
 
     id = sqlalchemy.Column(sqlalchemy.Integer,

@@ -10,7 +10,7 @@ from wtforms.validators import DataRequired
 from sqlalchemy import orm
 
 
-class User(SqlAlchemyBase, UserMixin):
+class User(SqlAlchemyBase, UserMixin):   # таблица пользователей
     __tablename__ = 'users'
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
@@ -35,7 +35,7 @@ class User(SqlAlchemyBase, UserMixin):
         return check_password_hash(self.hashed_password, password)
 
 
-class LoginForm(FlaskForm):
+class LoginForm(FlaskForm):   # форма для входа
     email = StringField('Введите почту', validators=[DataRequired()])
     password = PasswordField('Введите пароль', validators=[DataRequired()])
     remember_me = BooleanField('Запомнить меня')

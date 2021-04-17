@@ -3,9 +3,9 @@
 {% block content %}
 <div class="container w-25 bg-dark rounded-3 mt-3 p-3 text-center">
     {% if edit %}
-    <h2 class="simple-btn">Редактирование новости</h2>
+        <h2 class="simple-btn">Редактирование новости</h2>
     {% else %}
-    <h2 class="simple-btn">Добавление новости</h2>
+        <h2 class="simple-btn">Добавление новости</h2>
     {% endif %}
     <form action="" method="post">
         <div class="mx-auto p-0">
@@ -28,9 +28,9 @@
                 {{ form.submit(type="submit", class="btn btn-primary") }}
             </div>
             {% if message|length > 1 %}
-            <div class="alert alert-danger mt-2">
-                {{message}}
-            </div>
+                <div class="alert alert-danger mt-2">
+                    {{message}}
+                </div>
             {% endif %}
         </div>
     </form>
