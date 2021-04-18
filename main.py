@@ -11,6 +11,7 @@ from data.users import User, LoginForm
 from forms.news import NewsForm
 from forms.user import RegisterForm
 from forms.edit import RedactMailForm, RedactNameForm, RedactPasswordForm, MarketForm
+from PIL import Image
 # импорт необходимых библиотек
 
 app = Flask(__name__)  # создание приложения
@@ -110,12 +111,17 @@ def logout():
 def profile():
     if request.method == 'POST':
         session = db_session.create_session()
-        try:  # если пользователь загрузил фотографию, сохраняем её
-            photo = request.files['file']
-            name = app.config['UPLOAD_STATIC'] + photo.filename
-            photo.save(name)
-        except Exception:
-            pass
+        photo = request.files['file']
+        name = app.config['UPLOAD_STATIC'] + photo.filename
+        photo.save(name)
+        img = Image.open(name)
+        w, h = img.size
+        if w > h:
+            area = ((w - h) // 2, 0, h + (w - h) // 2, h)
+        else:
+            area = (0, (h - w) // 2, w, w + (h - w) // 2)
+        cropped_img = img.crop(area)
+        cropped_img.save(name)
         if str(photo) != "<FileStorage: '' ('application/octet-stream')>":  # присвоение фото user
             user = session.query(User).filter(User.id == current_user.id).first()
             user.photo = name
@@ -361,7 +367,7 @@ def impr():
                            photo=current_user.photo)
 
 
-@app.route('/reviews')   # страница отзывов пользователей
+@app.route('/reviews')  # страница отзывов пользователей
 def reviews():
     con = sqlite3.connect('db/vkbot.db')  # подключение базы данных вк-бота
     cur = con.cursor()
