@@ -1,17 +1,20 @@
 import datetime
 import sqlite3
+
 import vk_api
+from PIL import Image
 from flask import Flask, render_template, redirect, request
 from flask import abort
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from flask_ngrok import run_with_ngrok
+
 from data import db_session, users, accounts
 from data.news import News
 from data.users import User, LoginForm
+from forms.edit import RedactMailForm, RedactNameForm, RedactPasswordForm, MarketForm
 from forms.news import NewsForm
 from forms.user import RegisterForm
-from forms.edit import RedactMailForm, RedactNameForm, RedactPasswordForm, MarketForm
-from PIL import Image
+
 # импорт необходимых библиотек
 
 app = Flask(__name__)  # создание приложения
@@ -329,7 +332,7 @@ def edit_news(id):
 
 @app.route('/contacts')  # страница контактов
 def contacts():
-    ymap = "static/img/map_photo.png"   # яндекс карта
+    ymap = "static/img/map_photo.png"  # яндекс карта
     return render_template('contacts.html', filename=ymap, photo=current_user.photo,
                            title='Контакты', is_photo=current_user.is_photo)
 
@@ -394,12 +397,12 @@ def reviews():
                            photo=current_user.photo, ADMINS=ADMINS)
 
 
-@app.route('/market', methods=['POST', 'GET'])   # страница маркета
+@app.route('/market', methods=['POST', 'GET'])  # страница маркета
 def market():
     session = db_session.create_session()
     account_session = session.query(accounts.Accounts).all()
     account_dict = {}  # словарь аккаунтов
-    for account in account_session[::-1]:   # переворачиваем список новостей
+    for account in account_session[::-1]:  # переворачиваем список новостей
         account_dict[account.title] = [account.price, account.count, account.link,
                                        account.user_name, account.type, account.id,
                                        account.created_date, account.about_acc]
@@ -456,7 +459,7 @@ def edit_item(id):
     form = MarketForm()  # создание формы
     if request.method == 'GET':
         session = db_session.create_session()
-        account_session =\
+        account_session = \
             session.query(accounts.Accounts).filter(accounts.Accounts.id == id).first()
         if account_session:  # если аккаунт существует, отображаем его данные в форме
             form.name.data = account_session.title
@@ -469,7 +472,8 @@ def edit_item(id):
             abort(404)
     if form.validate_on_submit():
         session = db_session.create_session()
-        account_session = session.query(accounts.Accounts).filter(accounts.Accounts.id == id).first()
+        account_session = session.query(accounts.Accounts).filter(
+            accounts.Accounts.id == id).first()
         if account_session:
             account_session.title = form.name.data
             if len(account_session.title) <= 5:  # если название аккаунта слишком короткое
