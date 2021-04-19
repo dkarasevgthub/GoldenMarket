@@ -21,7 +21,7 @@ app = Flask(__name__)  # создание приложения
 login_manager = LoginManager()
 login_manager.init_app(app)
 run_with_ngrok(app)
-app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+app.config['SECRET_KEY'] = 'yandex_lyceum_secret_key'
 UPLOAD_STATIC = 'static/img/user_avatars/'  # папка для сохранения фотографий пользователей
 app.config['UPLOAD_STATIC'] = UPLOAD_STATIC
 edit_mode = False  # мод редактирования новостей
@@ -39,9 +39,9 @@ def load_user(user_id):
 @app.route('/')  # главная страница
 def index():
     if current_user.is_authenticated:
-        return render_template('startpage.html', title='Главная',
+        return render_template('start.html', title='Главная',
                                photo=current_user.photo, is_photo=current_user.is_photo)
-    return render_template('startpage.html', title='Главная')
+    return render_template('start.html', title='Главная')
 
 
 @app.route('/register', methods=['GET', 'POST'])  # страница регистрации
@@ -209,9 +209,9 @@ def redact_name():
 def news():
     global edit_mode
     db_sess = db_session.create_session()
-    news = db_sess.query(News)  # получение таблицы новостей из базы данных
+    news_all = db_sess.query(News)  # получение таблицы новостей из базы данных
     arr = []  # список для новостей
-    for item in news:
+    for item in news_all:
         delta = datetime.datetime.now() - item.created_date
         if delta.days != 0:
             arr.append([item.title, item.content, delta.days, 'days', item.id])
@@ -261,13 +261,13 @@ def delete_avatar():
     return redirect('/profile')
 
 
-@app.route('/delete_news/<int:id>')  # удаление новости по id
+@app.route('/delete_news/<int:news_id>')  # удаление новости по id
 @login_required
-def delete_news(id):
+def delete_news(news_id):
     if current_user.id in ADMINS:
         db_sess = db_session.create_session()
-        news = db_sess.query(News).filter(News.id == id).first()
-        db_sess.delete(news)
+        news_delete = db_sess.query(News).filter(News.id == news_id).first()
+        db_sess.delete(news_delete)
         db_sess.commit()
         return redirect('/news')
     return render_template('no_perm.html', title='Ошибка', is_photo=current_user.is_photo,
@@ -281,11 +281,11 @@ def add_news():
         form = NewsForm()
         if form.validate_on_submit():
             db_sess = db_session.create_session()
-            news = News()  # создание новости
-            news.title = form.title.data
-            news.content = form.content.data
-            news.created_date = datetime.datetime.now()
-            current_user.news.append(news)
+            news_add = News()  # создание новости
+            news_add.title = form.title.data
+            news_add.content = form.content.data
+            news_add.created_date = datetime.datetime.now()
+            current_user.news.append(news_add)
             db_sess.merge(current_user)
             db_sess.commit()
             return redirect('/news')
@@ -295,30 +295,30 @@ def add_news():
                            photo=current_user.photo)
 
 
-@app.route('/edit_news/<int:id>', methods=['GET', 'POST'])  # редактирование новости по id
+@app.route('/edit_news/<int:edit_news_id>', methods=['GET', 'POST'])  # редактирование новости по id
 @login_required
-def edit_news(id):
+def edit_news(edit_news_id):
     if current_user.id in ADMINS:  # проверка, является ли пользователь администратором
         form = NewsForm()
         if request.method == "GET":
             db_sess = db_session.create_session()
-            news = db_sess.query(News).filter(News.id == id,
-                                              News.user == current_user
-                                              ).first()
-            if news:  # если новость существует, отображаем ее данные в форме
-                form.title.data = news.title
-                form.content.data = news.content
+            news_delete = db_sess.query(News).filter(News.id == edit_news_id,
+                                                     News.user == current_user
+                                                     ).first()
+            if news_delete:  # если новость существует, отображаем ее данные в форме
+                form.title.data = news_delete.title
+                form.content.data = news_delete.content
             else:
                 abort(404)  # если новости не существует, выбрасываем ошибку 404
         if form.validate_on_submit():
             db_sess = db_session.create_session()
-            news = db_sess.query(News).filter(News.id == id,
-                                              News.user == current_user
-                                              ).first()
-            if news:  # если новость существует, редактируем еём
-                news.title = form.title.data
-                news.content = form.content.data
-                news.created_date = datetime.datetime.now()
+            news_delete = db_sess.query(News).filter(News.id == edit_news_id,
+                                                     News.user == current_user
+                                                     ).first()
+            if news_delete:  # если новость существует, редактируем еём
+                news_delete.title = form.title.data
+                news_delete.content = form.content.data
+                news_delete.created_date = datetime.datetime.now()
                 db_sess.commit()
                 return redirect('/')
             else:  # если новости не существует, выбрасываем ошибку 404
@@ -332,16 +332,16 @@ def edit_news(id):
 
 @app.route('/contacts')  # страница контактов
 def contacts():
-    ymap = "static/img/map_photo.png"  # яндекс карта
-    return render_template('contacts.html', filename=ymap, photo=current_user.photo,
+    photo = "static/img/map_photo.png"  # яндекс карта
+    return render_template('contacts.html', filename=photo, photo=current_user.photo,
                            title='Контакты', is_photo=current_user.is_photo)
 
 
 @app.route('/improvements')  # предложения пользователей (видят только администраторы)
 @login_required
-def impr():
+def improvements():
     if current_user.id in ADMINS:  # является ли пользователь администратором
-        con = sqlite3.connect('db/vkbot.db')  # подключение базы данных вк-бота
+        con = sqlite3.connect('db/vk_bot.db')  # подключение базы данных вк-бота
         cur = con.cursor()
         vk_group_session = vk_api.VkApi(token=GROUP_TOKEN)
         data = cur.execute('SELECT * FROM improvements').fetchall()
@@ -372,7 +372,7 @@ def impr():
 
 @app.route('/reviews')  # страница отзывов пользователей
 def reviews():
-    con = sqlite3.connect('db/vkbot.db')  # подключение базы данных вк-бота
+    con = sqlite3.connect('db/vk_bot.db')  # подключение базы данных вк-бота
     cur = con.cursor()
     vk_group_session = vk_api.VkApi(token=GROUP_TOKEN)
     data = cur.execute('SELECT * FROM reviews').fetchall()
@@ -453,14 +453,14 @@ def add_item():
                            photo=current_user.photo, form=form)
 
 
-@app.route('/edit_acc/<int:id>', methods=['GET', 'POST'])  # страница редактирования аккаунтов
+@app.route('/edit_acc/<int:edit_acc_id>', methods=['GET', 'POST'])  # страница редактирования аккаунтов
 @login_required
-def edit_item(id):
+def edit_item(edit_acc_id):
     form = MarketForm()  # создание формы
     if request.method == 'GET':
         session = db_session.create_session()
         account_session = \
-            session.query(accounts.Accounts).filter(accounts.Accounts.id == id).first()
+            session.query(accounts.Accounts).filter(accounts.Accounts.id == edit_acc_id).first()
         if account_session:  # если аккаунт существует, отображаем его данные в форме
             form.name.data = account_session.title
             form.category.data = account_session.type
@@ -473,7 +473,7 @@ def edit_item(id):
     if form.validate_on_submit():
         session = db_session.create_session()
         account_session = session.query(accounts.Accounts).filter(
-            accounts.Accounts.id == id).first()
+            accounts.Accounts.id == edit_acc_id).first()
         if account_session:
             account_session.title = form.name.data
             if len(account_session.title) <= 5:  # если название аккаунта слишком короткое
@@ -502,11 +502,11 @@ def edit_item(id):
                            name=current_user.name, photo=current_user.photo)
 
 
-@app.route('/delete_acc/<int:id>', methods=['GET', 'POST'])  # форма удаления аккаунта
+@app.route('/delete_acc/<int:delete_acc_id>', methods=['GET', 'POST'])  # форма удаления аккаунта
 @login_required
-def item_delete(id):
+def item_delete(delete_acc_id):
     session = db_session.create_session()
-    account_session = session.query(accounts.Accounts).filter(accounts.Accounts.id == id).first()
+    account_session = session.query(accounts.Accounts).filter(accounts.Accounts.id == delete_acc_id).first()
     if account_session:  # если аккаунт существует, удаляем его
         session.delete(account_session)
         session.commit()

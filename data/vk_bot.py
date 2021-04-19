@@ -17,7 +17,7 @@ EXCEPTIONS = [545571708]  # id пользлователей недоступны
 
 def back_keyboard():  # клавиатура с кнопкой "Back"
     back_btn_keyboard = VkKeyboard(one_time=False)
-    back_btn_keyboard.add_button('Back', color=VkKeyboardColor.SECONDARY)
+    back_btn_keyboard.add_button('Назад', color=VkKeyboardColor.SECONDARY)
     return back_btn_keyboard.get_keyboard()
 
 
@@ -47,10 +47,10 @@ def user_card(user_id, info, list_type='white'):  # клавиатура-соо�
 
 def main_keyboard(user_permissions):  # главная клавиатура пользователя
     main_btn_keyboard = VkKeyboard(one_time=False)
-    main_btn_keyboard.add_button('Write a review', color=VkKeyboardColor.PRIMARY)
-    main_btn_keyboard.add_button('Offer an improvement', color=VkKeyboardColor.PRIMARY)
+    main_btn_keyboard.add_button('Написать отзыв', color=VkKeyboardColor.PRIMARY)
+    main_btn_keyboard.add_button('Предложить', color=VkKeyboardColor.PRIMARY)
     main_btn_keyboard.add_line()
-    main_btn_keyboard.add_openlink_button('Go to the website', 'http://127.0.0.1:5000')
+    main_btn_keyboard.add_openlink_button('Перейти на сайт', 'http://127.0.0.1:5000')
     if user_permissions:
         main_btn_keyboard.add_line()
         main_btn_keyboard.add_button('Administration', color=VkKeyboardColor.SECONDARY)
@@ -97,7 +97,7 @@ long_poll = VkBotLongPoll(vk_group_session, GROUP_ID)
 admins = []
 black = []
 # подключение к базе данных, получение черного и белого списка
-con = sqlite3.connect('../db/vkbot.db')
+con = sqlite3.connect('../db/vk_bot.db')
 cur = con.cursor()
 response = cur.execute('SELECT * FROM permissions').fetchall()
 for elem in response:
@@ -106,7 +106,7 @@ for elem in response:
     if elem[2] == 'TRUE':
         black.append(elem[0])
 # смена статуса группы
-vk_user_session.method("status.set", {"text": "Bot status: Running", "group_id": GROUP_ID})
+# vk_user_session.method("status.set", {"text": "Bot status: Running", "group_id": GROUP_ID})
 
 # основной блок работы программы
 for event in long_poll.listen():
@@ -116,7 +116,7 @@ for event in long_poll.listen():
             is_admin = True
         else:
             is_admin = False
-        # функционал кнопки "Back"
+        # функционал кнопки "Назад"
         if waiting_for_rev and not admin_board and not waiting_for_imp and \
                 event.obj.message['text'] != 'Назад':
             waiting_for_rev = False
@@ -125,12 +125,12 @@ for event in long_poll.listen():
                         f"VALUES({event.obj.message['from_id']}, '{event.obj.message['text']}',"
                         f" datetime('{datetime.datetime.now()}'))")
             vk.messages.send(user_id=event.obj.message['from_id'],
-                             message="Спасибо за отзыв!",
+                             message="⏬",
                              random_id=random.randint(0, 2 ** 64),
                              keyboard=keyboard
                              )
             con.commit()
-        # функционал кнопки "Back"
+        # функционал кнопки "Назад"
         if waiting_for_imp and not admin_board and not waiting_for_rev \
                 and event.obj.message['text'] != 'Назад':
             waiting_for_imp = False
@@ -139,7 +139,7 @@ for event in long_poll.listen():
                         f"VALUES({event.obj.message['from_id']}, '{event.obj.message['text']}',"
                         f" datetime('{datetime.datetime.now()}'))")
             vk.messages.send(user_id=event.obj.message['from_id'],
-                             message="Спасибо за ваше предложение!",
+                             message='⏬',
                              random_id=random.randint(0, 2 ** 64),
                              keyboard=keyboard
                              )
@@ -165,7 +165,7 @@ for event in long_poll.listen():
                              keyboard=keyboard
                              )
         # функционал кнопки "Назад" в главном меню
-        elif event.obj.message['text'] == 'Back' and not admin_board:
+        elif event.obj.message['text'] == 'Назад' and not admin_board:
             keyboard = main_keyboard(is_admin)
             waiting_for_rev = False
             waiting_for_imp = False
@@ -432,7 +432,7 @@ for event in long_poll.listen():
                              )
         # функционал кнопки "Back"
         elif not waiting_for_imp and not waiting_for_rev and not waiting_for_id and \
-                event.obj.message['text'] != 'Back':
+                event.obj.message['text'] != 'Назад' and event.obj.message['text'] != 'Back':
             keyboard = main_keyboard(is_admin)
             vk.messages.send(user_id=event.obj.message['from_id'],
                              message='⏬',

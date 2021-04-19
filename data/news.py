@@ -1,8 +1,10 @@
 import datetime
+
 import sqlalchemy
-from .db_session import SqlAlchemyBase
 from flask_login import UserMixin
 from sqlalchemy import orm
+
+from .db_session import SqlAlchemyBase
 
 
 class News(SqlAlchemyBase, UserMixin):  # таблица новостей

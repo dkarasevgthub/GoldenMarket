@@ -27,13 +27,13 @@
             {% if edit_mode %}
             <div class="d-flex mx-auto">
                 <a href="/edit_news/{{ item[4] }}" class="my-auto">
-                    <button type="button" class="btn-sm btn-warning me-2">
-                        Редактировать
+                    <button type="button" class="btn-sm btn-warning me-1">
+                        <i class="fa fa-pencil fa-1x" aria-hidden="true"></i>
                     </button>
                 </a>
                 <a href="/delete_news/{{ item[4] }}" class="my-auto">
-                    <button type="button" class="btn-sm btn-danger ms-2 me-3 px-4">
-                        Удалить
+                    <button type="button" class="btn-sm btn-danger ms-1 me-3">
+                        <i class="fa fa-trash-o fa-1x" aria-hidden="true"></i>
                     </button>
                 </a>
             </div>
