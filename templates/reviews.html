@@ -8,9 +8,9 @@
     <h2 class="mb-3 simple-btn">Отзывы</h2>
     {% endif %}
     {% if current_user.id in ADMINS and not impr %}
-    <div class="w-50 p-2 mx-auto">
+    <div class="w-50 p-0 m-auto">
         <a href="/improvements">
-            <button type="button" class="btn btn-outline-primary mx-2 px-5 border-0">
+            <button type="button" class="btn btn-outline-primary mx-2 px-5">
                 Предложения
             </button>
         </a>
@@ -29,7 +29,7 @@
             <h6 class="card-text mx-auto text-start">{{ item[1] }}</h6>
         </div>
         <div class="card-footer">
-            {{ item[2] }} {{ item[3] }} ago
+            <i class="fa fa-calendar-o fa-1x simple-btn me-1" aria-hidden="true"></i> {{ item[2] }} {{ item[3] }} ago
         </div>
     </div>
     {% endfor %}

@@ -14,8 +14,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link rel="stylesheet"
           href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="static/css/style.css" type="text/css">
-    <link rel="shortcut icon" href="static/img/site-logo.png" type="image/png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" type="text/css">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/site-logo.png') }}" type="image/png">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
             crossorigin="anonymous"></script>
@@ -26,6 +26,7 @@
         * {
             font-family: 'Open Sans', sans-serif;
             color: #d1d1d1;
+
         }
 
         body {
@@ -44,17 +45,14 @@
             color: #212529 !important;
         }
 
-        .text-primary {
-            color: #0d6efd !important;
-        }
-
         img {
             max-width:100%;
             height: 100%;
         }
 
-
-
+        .text-black {
+            color: black;
+        }
     </style>
     <title>{{ title }}</title>
 </head>
@@ -64,7 +62,7 @@
         <div class="navbar-brand text-center m-2 p-0">
             <a href="/">
                 <img src="{{ url_for('static', filename='img/site-logo.png') }}"
-                     class="me-1" width="50" height="50">
+                     class="me-1" width="45" height="45">
             </a>
             GOLDEN MARKET
         </div>
@@ -77,7 +75,7 @@
                     data-toggle="dropdown"
                     aria-haspopup="true" aria-expanded="false">
                 {% if is_photo %}
-                <img src="{{ photo }}" width="40" height="40"
+                <img src="{{ url_for('static', filename=photo) }}" width="40" height="40"
                      class="rounded-circle border border-3 border-success">
                 {% else %}
                 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor"
@@ -96,21 +94,27 @@
             </button>
             <div class="dropdown-menu bg-dark border-success border-3 rounded-3"
                  aria-labelledby="dropdownMenuButton;dropdownMenuLabel">
-                <a class="simple-btn dropdown-item" href="/profile">Профиль</a>
+                <a class="simple-btn dropdown-item" href="/profile">
+                    <i class="fa fa-id-card-o fa-1x simple-btn me-1" aria-hidden="true"></i>
+                    Профиль
+                </a>
                 <hr class="simple-btn dropdown-divider m-1">
-                <a class="simple-btn dropdown-item" href="/logout">Выход</a>
+                <a class="simple-btn dropdown-item" href="/logout">
+                    <i class="fa fa-sign-out fa-1x simple-btn me-1" aria-hidden="true"></i> Выход
+                </a>
             </div>
         </div>
         {% else %}
         <div>
-            <a href="/login">
-                <button type="button" class="btn btn-outline-primary mx-2">
-                    Вход
+            <a href="/register">
+                <button type="button" class="btn btn-sm btn-outline-success">
+                    <i class="fa fa-user-plus fa-1x me-1 text-success" aria-hidden="true"></i>
+                    Регистрация
                 </button>
             </a>
-            <a href="/register">
-                <button type="button" class="btn btn-outline-success">
-                    Регистрация
+            <a href="/login">
+                <button type="button" class="btn btn-outline-primary mx-2">
+                    <i class="fa fa-sign-in fa-1x me-1 text-primary" aria-hidden="true"></i> Вход
                 </button>
             </a>
         </div>
@@ -120,23 +124,33 @@
 <main>
     <div class="container-fluid w-50 mt-3 p-0 text-center rounded-3">
         <a href="/" class="mx-1">
-            <button class="simple-btn btn btn-dark px-4 py-2">Главная</button>
+            <button class="simple-btn btn btn-dark px-4 py-2">
+                <i class="fa fa-home fa-1x simple-btn me-1" aria-hidden="true"></i> Главная
+            </button>
         </a>
         <a href="/news" class="mx-1">
-            <button class="simple-btn btn btn-dark px-4 py-2">Новости</button>
+            <button class="simple-btn btn btn-dark px-3 py-2">
+                <i class="fa fa-newspaper-o fa-1x simple-btn me-1" aria-hidden="true"></i> Новости
+            </button>
         </a>
         <a href="/market" class="mx-1">
-            <button class="simple-btn btn btn-dark mx-auto px-4 py-2">Аккаунты</button>
+            <button class="simple-btn btn btn-dark px-3 py-2">
+                <i class="fa fa-gamepad fa-1x simple-btn me-1" aria-hidden="true"></i> Аккаунты
+            </button>
         </a>
         <a class="mx-auto" href="/reviews">
-            <button class="simple-btn btn btn-dark px-4 py-2">Отзывы</button>
+            <button class="simple-btn btn btn-dark px-3 py-2">
+                <i class="fa fa-commenting fa-1x simple-btn me-1" aria-hidden="true"></i> Отзывы
+            </button>
         </a>
         <a href="/contacts" class="mx-1">
-            <button class="simple-btn btn btn-dark px-4 py-2">Контакты</button>
+            <button class="simple-btn btn btn-dark px-3 py-2">
+                <i class="fa fa-phone fa-1x simple-btn me-1" aria-hidden="true"></i> Контакты
+            </button>
         </a>
         <a href="https://vk.com/public203487503" class="mx-1" target="_blank">
             <button class="btn btn-dark px-3 py-2">
-                <i class="fa fa-vk w-100" aria-hidden="true"></i>
+                <i class="fa fa-vk w-100 simple-btn" aria-hidden="true"></i>
             </button>
         </a>
     </div>

@@ -2,61 +2,127 @@
 
 {% block content %}
 <div class="container w-50 bg-dark rounded-3 mt-3 p-3 text-center">
+    <div>
+        <a href="/market" class="mx-1">
+            <button class="simple-btn btn btn-dark px-4 py-2 border-2 border-success">
+                <i class="fa fa-globe fa-2x simple-btn me-1" aria-hidden="true"></i>
+            </button>
+        </a>
+        <a href="/market/vk" class="mx-1">
+            <button class="simple-btn btn btn-dark px-4 py-2 border-2 border-success">
+                <i class="fa fa-vk fa-2x simple-btn me-1" aria-hidden="true"></i>
+            </button>
+        </a>
+        <a href="/market/steam" class="mx-1">
+            <button class="simple-btn btn btn-dark px-4 py-2 border-2 border-success">
+                <i class="fa fa-steam fa-2x simple-btn me-1" aria-hidden="true"></i>
+            </button>
+        </a>
+        <a href="/market/instagram" class="mx-1">
+            <button class="simple-btn btn btn-dark px-4 py-2 border-2 border-success">
+                <i class="fa fa-instagram fa-2x simple-btn me-1" aria-hidden="true"></i>
+            </button>
+        </a>
+        <a href="/market/origin" class="mx-1">
+            <button class="simple-btn btn btn-dark px-4 py-2 border-2 border-success">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" style="">
+                    <rect id="backgroundrect" width="100%" height="100%" x="0" y="0"
+                          fill="none" stroke="none"/>
+                    <g class="currentLayer" style=""><title>Layer 1</title>
+                        <path d="M16.786 4.146c1.583 0.094 3.135 0.51 4.552 1.224 1.375 0.688 2.599 1.635 3.609 2.792 1 1.156 1.76 2.474 2.286 3.953 0.521 1.479 0.729 3.036 0.62 4.672-0.047 0.844-0.182 1.667-0.406 2.464-0.224 0.781-0.526 1.542-0.901 2.271-0.583 1.13-1.24 2.198-1.958 3.214-0.719 1.010-1.5 1.953-2.349 2.823-0.854 0.87-1.755 1.672-2.714 2.406-0.958 0.724-1.958 1.38-3.005 1.969l-0.047 0.036c-0.047 0.021-0.094 0.036-0.146 0.031-0.083-0.021-0.156-0.068-0.214-0.13-0.052-0.068-0.083-0.151-0.083-0.229 0-0.042 0.005-0.078 0.016-0.115 0.016-0.031 0.031-0.057 0.052-0.083 0.37-0.526 0.672-1.073 0.917-1.646 0.24-0.578 0.401-1.182 0.49-1.813 0-0.042-0.021-0.083-0.052-0.115-0.026-0.031-0.073-0.052-0.115-0.052-0.349 0.047-0.703 0.073-1.057 0.083-0.354 0.016-0.708 0-1.063-0.047-1.583-0.094-3.135-0.516-4.557-1.224-1.375-0.688-2.599-1.635-3.609-2.792-1.005-1.161-1.781-2.5-2.286-3.953-0.521-1.5-0.734-3.083-0.62-4.672 0.047-0.844 0.182-1.667 0.411-2.464s0.526-1.536 0.901-2.24c0.583-1.151 1.24-2.234 1.958-3.245s1.5-1.953 2.344-2.828c0.854-0.865 1.755-1.667 2.714-2.396s1.958-1.385 3.005-1.974l0.047-0.031c0.047-0.026 0.094-0.036 0.146-0.036 0.089 0.021 0.161 0.068 0.214 0.13 0.057 0.068 0.083 0.141 0.083 0.234 0 0.036-0.005 0.073-0.016 0.109-0.010 0.031-0.031 0.057-0.052 0.083-0.365 0.516-0.672 1.068-0.917 1.651-0.24 0.578-0.396 1.177-0.484 1.807 0 0.047 0.016 0.083 0.047 0.115s0.073 0.052 0.115 0.052c0.349-0.047 0.703-0.073 1.057-0.083 0.365-0.010 0.714 0.005 1.068 0.047zM15.708 20.635c1.229 0.104 2.448-0.307 3.359-1.141 0.964-0.849 1.479-1.917 1.568-3.198 0.104-1.24-0.307-2.464-1.141-3.38-0.802-0.943-1.964-1.51-3.198-1.552-1.234-0.104-2.458 0.313-3.38 1.141-0.943 0.802-1.51 1.964-1.552 3.203-0.104 1.234 0.307 2.453 1.13 3.38 0.833 0.964 1.906 1.484 3.214 1.547z"
+                              id="svg_1" class="" fill-opacity="1" fill="#ebebeb"/>
+                    </g>
+                </svg>
+            </button>
+        </a>
+        <a href="/market/mail" class="mx-1">
+            <button class="simple-btn btn btn-dark px-4 py-2 border-2 border-success">
+                <i class="fa fa-at fa-2x simple-btn me-1" aria-hidden="true"></i>
+            </button>
+        </a>
+        <a href="/market/other" class="mx-1">
+            <button class="simple-btn btn btn-dark px-4 py-2 border-2 border-success">
+                <i class="fa fa-bookmark fa-2x simple-btn me-1" aria-hidden="true"></i>
+            </button>
+        </a>
+    </div>
     {% if current_user.is_authenticated %}
-    <a href="/add_acc">
-        <button type="button" class="btn btn-success">
-            Выставить аккаунт на продажу
-        </button>
-    </a>
+    <div class="container text-center bg-dark mx-auto m-3">
+        <a href="/add_acc">
+            <button type="button" class="btn btn-outline-primary mx-2 px-5">
+                <i class="fa fa-shopping-cart fa-1x my-auto text-primary m-1"
+                   aria-hidden="true"></i> Продать аккаунт
+            </button>
+        </a>
+    </div>
     {% endif %}
-    <a href="/market">
-        <button type="button">All</button>
-    </a>
-    <a href="/market/vk">
-        <button type="button">VK</button>
-    </a>
-    <a href="/market/steam">
-        <button type="button">
-            <i class="fa fa-steam" aria-hidden="true"></i>
-        </button>
-    </a>
-    <a href="/market/instagram">
-        <button type="button" style="color: black">Inst</button>
-    </a>
-    <a href="/market/origin">
-        <button type="button" style="color: black">Origin</button>
-    </a>
-    <a href="/market/mail">
-        <button type="button" style="color: black">Mail</button>
-    </a>
-    <a href="/market/other">
-        <button type="button" style="color: black">Other</button>
-    </a>
+    {% for account in account_dict %}
+    <div class="card text-center m-4 bg-dark rounded-3 border-success">
+        <div class="card-header bg-success p-1 simple-btn">
+            {{ account_dict[account][3] }}
+        </div>
+        <div class="card-body border border-success p-2">
+            <div class="container">
+                <div class="row">
+                    <div class="col text-start p-0 ms-1 mt-1">
+                        {% if account_dict[account][4] == 'origin' %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" style="">
+                            <rect id="backgroundrect" width="100%" height="100%" x="0" y="0"
+                                  fill="none" stroke="none"/>
+                            <g class="currentLayer" style=""><title>Layer 1</title>
+                                <path d="M16.786 4.146c1.583 0.094 3.135 0.51 4.552 1.224 1.375 0.688 2.599 1.635 3.609 2.792 1 1.156 1.76 2.474 2.286 3.953 0.521 1.479 0.729 3.036 0.62 4.672-0.047 0.844-0.182 1.667-0.406 2.464-0.224 0.781-0.526 1.542-0.901 2.271-0.583 1.13-1.24 2.198-1.958 3.214-0.719 1.010-1.5 1.953-2.349 2.823-0.854 0.87-1.755 1.672-2.714 2.406-0.958 0.724-1.958 1.38-3.005 1.969l-0.047 0.036c-0.047 0.021-0.094 0.036-0.146 0.031-0.083-0.021-0.156-0.068-0.214-0.13-0.052-0.068-0.083-0.151-0.083-0.229 0-0.042 0.005-0.078 0.016-0.115 0.016-0.031 0.031-0.057 0.052-0.083 0.37-0.526 0.672-1.073 0.917-1.646 0.24-0.578 0.401-1.182 0.49-1.813 0-0.042-0.021-0.083-0.052-0.115-0.026-0.031-0.073-0.052-0.115-0.052-0.349 0.047-0.703 0.073-1.057 0.083-0.354 0.016-0.708 0-1.063-0.047-1.583-0.094-3.135-0.516-4.557-1.224-1.375-0.688-2.599-1.635-3.609-2.792-1.005-1.161-1.781-2.5-2.286-3.953-0.521-1.5-0.734-3.083-0.62-4.672 0.047-0.844 0.182-1.667 0.411-2.464s0.526-1.536 0.901-2.24c0.583-1.151 1.24-2.234 1.958-3.245s1.5-1.953 2.344-2.828c0.854-0.865 1.755-1.667 2.714-2.396s1.958-1.385 3.005-1.974l0.047-0.031c0.047-0.026 0.094-0.036 0.146-0.036 0.089 0.021 0.161 0.068 0.214 0.13 0.057 0.068 0.083 0.141 0.083 0.234 0 0.036-0.005 0.073-0.016 0.109-0.010 0.031-0.031 0.057-0.052 0.083-0.365 0.516-0.672 1.068-0.917 1.651-0.24 0.578-0.396 1.177-0.484 1.807 0 0.047 0.016 0.083 0.047 0.115s0.073 0.052 0.115 0.052c0.349-0.047 0.703-0.073 1.057-0.083 0.365-0.010 0.714 0.005 1.068 0.047zM15.708 20.635c1.229 0.104 2.448-0.307 3.359-1.141 0.964-0.849 1.479-1.917 1.568-3.198 0.104-1.24-0.307-2.464-1.141-3.38-0.802-0.943-1.964-1.51-3.198-1.552-1.234-0.104-2.458 0.313-3.38 1.141-0.943 0.802-1.51 1.964-1.552 3.203-0.104 1.234 0.307 2.453 1.13 3.38 0.833 0.964 1.906 1.484 3.214 1.547z"
+                                      id="svg_1" class="" fill-opacity="1" fill="#ebebeb"/>
+                            </g>
+                        </svg>
+                        {% elif account_dict[account][4] == 'mail' %}
+                        <i class="fa fa-at fa-2x simple-btn me-1" aria-hidden="true"></i>
+                        {% elif account_dict[account][4] == 'other' %}
+                        <i class="fa fa-bookmark fa-2x simple-btn me-1" aria-hidden="true"></i>
+                        {% else %}
+                        <i class="fa fa-{{ account_dict[account][4] }} fa-2x simple-btn"
+                           aria-hidden="true"></i>
+                        {% endif %}
+                    </div>
+                    <h5 class="col p-0 card-title my-auto">
+                        🔥{{ account }}🔥
+                    </h5>
+                    <div class="col text-end p-0 me-1 mt-1">
+                        <i class="fa fa-money fa-1x simple-btn" aria-hidden="true"></i> {{
+                        account_dict[account][0] }} ₽
+                    </div>
+                </div>
+                <div class="card-text my-3 text-start">{{ account_dict[account][7] }}</div>
+                <div class="container d-flex p-0">
+                    <a href="{{ account_dict[account][2] }}" target="_blank" class="me-2">
+                        <button class="btn btn-sm btn-primary" type="button">
+                            <i class="fa fa-pencil fa-1x simple-btn" aria-hidden="true"></i>
+                            Написать продавцу
+                        </button>
+                    </a>
+                    {% if current_user.id in ADMINS %}
+                    <a href="edit_acc/{{ account_dict[account][5] }}" class="me-2">
+                        <button class="btn btn-sm btn-warning" type="button">
+                            <i class="fa fa-pencil fa-1x text-dark" aria-hidden="true"></i>
+                            Редактировать
+                        </button>
+                    </a>
+                    <a href="/delete_acc/{{ account_dict[account][5] }}" class="me-2">
+                        <button class="btn btn-sm btn-danger" type="button">
+                            <i class="fa fa-trash-o fa-1x simple-btn" aria-hidden="true"></i>
+                            Удалить
+                        </button>
+                    </a>
+                    {% endif %}
+                    <h6 class="my-auto ms-2">
+                        <i class="fa fa-calendar-o fa-1x simple-btn me-1" aria-hidden="true"></i>
+                        {{ account_dict[account][6][2] }}.{{ account_dict[account][6][1] }}.{{
+                        account_dict[account][6][0] }} {{ account_dict[account][8][0] }}:{{
+                        account_dict[account][8][1] }}
+                    </h6>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
 </div>
-{% for account in account_dict %}
-<div class="container w-50 bg-dark rounded-3 mt-3 p-3">
-    <p style="text-align: center; color: white;">{{account}} - {{account_dict[account][4]}}</p>
-    <p style="text-align: center; color: white;">{{account_dict[account][7]}}</p>
-    {% if account_dict[account][1] == 1 %}
-    <p style=' color: white;'>Цена: {{account_dict[account][0]}} руб. <br> Продавец: {{account_dict[account][3]}}</p>
-    {% else %}
-    <p style=' color: white;'>Цена: {{account_dict[account][0]}} руб. ; Количество: {{account_dict[account][1]}}<br>Продавец:
-        {{account_dict[account][3]}}</p>
-    {% endif %}
-    <p style=' color: white;'>Дата размещения - {{account_dict[account][6]}}</p>
-    <a target="_blank" href="{{account_dict[account][2]}}" class="btn btn-primary">Написать продавцу</a>
-    {% if current_user.name == 'admin' or current_user.name == account_dict[account][3] %}
-    <a href="/edit_acc/{{account_dict[account][5]}}" class="my-auto">
-        <button type="button" class="btn btn-outline-success mx-2 px-4">
-            Редактировать
-        </button>
-    </a>
-    <a href="/delete_acc/{{account_dict[account][5]}}" class="my-auto">
-        <button type="button" class="btn btn-outline-warning mx-2 px-4">
-            Удалить
-        </button>
-    </a>
-    {% endif %}
-</div>
-{% endfor %}
 {% endblock %}

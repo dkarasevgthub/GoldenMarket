@@ -4,47 +4,49 @@
 <div class="container w-50 bg-dark rounded-3 mt-3 p-3 text-center">
     <h2 class="mb-3 simple-btn">Новости</h2>
     {% if current_user.id in ADMINS %}
-    <div class="card w-50 text-center m-4 p-2 bg-dark rounded-3 border-2 border-primary mx-auto">
-        <h6 class="card-title text-primary mb-2">Управление</h6>
-        <div class="d-flex mx-auto">
-            <a href="/add_news">
-                <button type="button" class="btn btn-outline-success mx-2 px-5">
-                    Добавить
-                </button>
-            </a>
-            <a href="/news_edit" class="my-auto">
-                <button type="button" class="btn btn-outline-warning mx-2 px-4">
-                    Редактировать
-                </button>
-            </a>
-        </div>
+    <div class="container w-50 text-center bg-dark mx-auto d-flex">
+        <a href="/add_news">
+            <button type="button" class="btn btn-outline-success mx-2 px-5 d-flex">
+                <i class="fa fa-plus fa-1x my-auto text-success m-1" aria-hidden="true"></i>
+                Добавить
+            </button>
+        </a>
+        <a href="/news_edit" class="my-auto">
+            <button type="button" class="btn btn-outline-warning mx-2 px-4 d-flex">
+                <i class="fa fa-pencil fa-1x text-warning m-1 my-auto" aria-hidden="true"></i>
+                Редактировать
+            </button>
+        </a>
     </div>
     {% endif %}
     {% if news %}
     {% for item in news %}
-    <div class="card text-center m-4 bg-dark rounded-3 border-success">
-        <div class="card-header bg-success">
-            {% if edit_mode %}
+    <div class="card text-center m-4 bg-dark rounded-3 border-success border-2">
+        {% if edit_mode %}
+        <div class="card-header bg-success p-1 d-flex justify-content-end">
             <div class="d-flex mx-auto">
                 <a href="/edit_news/{{ item[4] }}" class="my-auto">
                     <button type="button" class="btn-sm btn-warning me-1">
-                        <i class="fa fa-pencil fa-1x" aria-hidden="true"></i>
+                        <i class="fa fa-pencil fa-1x text-black" aria-hidden="true"></i>
                     </button>
                 </a>
                 <a href="/delete_news/{{ item[4] }}" class="my-auto">
-                    <button type="button" class="btn-sm btn-danger ms-1 me-3">
-                        <i class="fa fa-trash-o fa-1x" aria-hidden="true"></i>
+                    <button type="button" class="btn-sm btn-danger ms-1 me-2">
+                        <i class="fa fa-trash-o fa-1x simple-btn" aria-hidden="true"></i>
                     </button>
                 </a>
             </div>
-            {% endif %}
         </div>
+        {% else %}
+        <div class="card-header bg-success"></div>
+        {% endif %}
         <div class="card-body border border-success">
-            <h4 class="card-title mb-3">{{ item[0] }}</h4>
+            <h4 class="card-title mb-3 simple-btn">{{ item[0] }}</h4>
             <h6 class="card-text mx-auto text-start">{{ item[1] }}</h6>
         </div>
         <div class="card-footer">
-            {{ item[2] }} {{ item[3] }} ago
+            <i class="fa fa-calendar-o fa-1x simple-btn me-1" aria-hidden="true"></i> {{ item[2] }}
+            {{ item[3] }} ago
         </div>
     </div>
     {% endfor %}
