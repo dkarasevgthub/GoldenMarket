@@ -112,7 +112,16 @@ def profile():
         session = db_session.create_session()
         photo = request.files['file']
         name = app.config['UPLOAD_STATIC'] + photo.filename
-        photo.save(name)
+        try:
+            photo.save(name)
+        except PermissionError:
+            return render_template('profile.html', name=current_user.name,
+                                   photo='/'.join(current_user.photo.split('/')[1:]),
+                                   email=current_user.email,
+                                   created_date=
+                                   str(current_user.created_date).split()[0].split('-'),
+                                   title=current_user.name, is_photo=current_user.is_photo,
+                                   message='Вы не выбрали фотографию')
         if str(photo) != "<FileStorage: '' ('application/octet-stream')>":  # присвоение фото user
             user = session.query(User).filter(User.id == current_user.id).first()
             user.photo = name
@@ -456,9 +465,21 @@ def add_item():
                                    photo='/'.join(current_user.photo.split('/')[1:]),
                                    is_photo=current_user.is_photo,
                                    message='Вы слишком высокую цену на аккаунт. Снизьте цену')
+        elif len(acc.price) == 0:  # если пользователь не ввел цену
+            return render_template('add_acc.html', form=form,
+                                   name=current_user.name,
+                                   photo='/'.join(current_user.photo.split('/')[1:]),
+                                   is_photo=current_user.is_photo,
+                                   message='Вы не ввели цену аккаунта')
         acc.count = form.count.data
         acc.user_name = current_user.name
         acc.about_acc = form.about.data
+        if len(acc.about_acc) < 15:  # если пользователь описал аккаунт слишком коротко
+            return render_template('add_acc.html', form=form,
+                                   name=current_user.name,
+                                   photo='/'.join(current_user.photo.split('/')[1:]),
+                                   is_photo=current_user.is_photo,
+                                   message='Опишите ваш аккаунт более подробно')
         session.add(acc)
         session.commit()
         account_session = session.query(accounts.Accounts).all()
