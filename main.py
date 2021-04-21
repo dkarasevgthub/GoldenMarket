@@ -33,8 +33,11 @@ def load_user(user_id):
 
 @app.route('/')  # главная страница
 def index():
-    return render_template('start.html', title='Главная',
-                           photo='/'.join(current_user.photo.split('/')[1:]), is_photo=current_user.is_photo)
+    if current_user.is_authenticated:
+        return render_template('start.html', title='Главная',
+                               photo='/'.join(current_user.photo.split('/')[1:]),
+                               is_photo=current_user.is_photo)
+    return render_template('start.html', title='Главная')
 
 
 @app.route('/register', methods=['GET', 'POST'])  # страница регистрации
@@ -220,10 +223,13 @@ def news():
         else:
             arr.append([item.title, item.content,
                         int(str(delta).split()[0].split(':')[1]), 'minutes', item.id])
-    return render_template('news.html', title='Новости', news=arr[::-1],
-                           photo='/'.join(current_user.photo.split('/')[1:]), edit_mode=edit_mode,
-                           ADMINS=ADMINS,
-                           is_photo=current_user.is_photo)
+    if current_user.is_authenticated:
+        return render_template('news.html', title='Новости', news=arr[::-1],
+                               photo='/'.join(current_user.photo.split('/')[1:]),
+                               edit_mode=edit_mode,
+                               ADMINS=ADMINS,
+                               is_photo=current_user.is_photo)
+    return render_template('news.html', title='Новости', news=arr[::-1])
 
 
 @app.route('/news_edit')  # страница редактирования новостей
@@ -330,9 +336,11 @@ def edit_news(edit_id):
 @app.route('/contacts')  # страница контактов
 def contacts():
     map_pic = "static/img/map_photo.png"  # яндекс карта
-    return render_template('contacts.html', filename=map_pic,
-                           photo='/'.join(current_user.photo.split('/')[1:]),
-                           title='Контакты', is_photo=current_user.is_photo)
+    if current_user.is_authenticated:
+        return render_template('contacts.html', filename=map_pic,
+                               photo='/'.join(current_user.photo.split('/')[1:]),
+                               title='Контакты', is_photo=current_user.is_photo)
+    return render_template('contacts.html', filename=map_pic, title='Контакты')
 
 
 @app.route('/improvements')  # предложения пользователей (видят только администраторы)
@@ -391,9 +399,11 @@ def reviews():
             arr.append(
                 [[user['first_name'], user['last_name'], item[0], user['photo_50']], item[1],
                  int(str(delta).split(':')[1]), 'minutes'])
-    return render_template('reviews.html', title='Отзывы', reviews=arr,
-                           is_photo=current_user.is_photo,
-                           photo='/'.join(current_user.photo.split('/')[1:]), ADMINS=ADMINS)
+    if current_user.is_authenticated:
+        return render_template('reviews.html', title='Отзывы', reviews=arr,
+                               is_photo=current_user.is_photo,
+                               photo='/'.join(current_user.photo.split('/')[1:]), ADMINS=ADMINS)
+    return render_template('reviews.html', title='Отзывы', reviews=arr)
 
 
 @app.route('/market', methods=['POST', 'GET'])  # страница маркета
@@ -408,10 +418,12 @@ def market():
                                        account.about_acc,
                                        str(account.created_date).split()[1].split('.')[0].split(
                                            ':')]
-    return render_template('market.html', name=current_user.name,
-                           photo='/'.join(current_user.photo.split('/')[1:]),
-                           account_dict=account_dict,
-                           is_photo=current_user.is_photo, title='Аккануты', ADMINS=ADMINS)
+    if current_user.is_authenticated:
+        return render_template('market.html', name=current_user.name,
+                               photo='/'.join(current_user.photo.split('/')[1:]),
+                               account_dict=account_dict,
+                               is_photo=current_user.is_photo, title='Аккануты', ADMINS=ADMINS)
+    return render_template('market.html', account_dict=account_dict, title='Аккануты')
 
 
 @login_required
@@ -563,11 +575,16 @@ def sorted_market(category):
                                        account.about_acc,
                                        str(account.created_date).split()[1].split('.')[0].split(
                                            ':')]
+    if current_user.is_authenticated:
+        return render_template('market.html',
+                               name=current_user.name,
+                               photo='/'.join(current_user.photo.split('/')[1:]),
+                               account_dict=account_dict,
+                               is_photo=current_user.is_photo, ADMINS=ADMINS,
+                               title=f'Аккаунты: {category.title()}')
     return render_template('market.html',
                            name=current_user.name,
-                           photo='/'.join(current_user.photo.split('/')[1:]),
                            account_dict=account_dict,
-                           is_photo=current_user.is_photo, ADMINS=ADMINS,
                            title=f'Аккаунты: {category.title()}')
 
 
