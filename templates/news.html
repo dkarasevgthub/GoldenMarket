@@ -4,7 +4,7 @@
 <div class="container w-50 bg-dark rounded-3 mt-3 p-3 text-center">
     <h2 class="mb-3 simple-btn">Новости</h2>
     {% if current_user.id in ADMINS %}
-    <div class="container w-50 text-center bg-dark mx-auto d-flex">
+    <div class="text-center bg-dark mx-auto d-flex justify-content-center">
         <a href="/add_news">
             <button type="button" class="btn btn-outline-success mx-2 px-5 d-flex">
                 <i class="fa fa-plus fa-1x my-auto text-success m-1" aria-hidden="true"></i>

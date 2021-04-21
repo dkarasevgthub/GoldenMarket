@@ -1,18 +1,18 @@
 import datetime
+
 import sqlalchemy
 from flask_login import UserMixin
 from flask_wtf import FlaskForm
 from sqlalchemy import orm
 from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms import PasswordField, SubmitField, StringField
-from wtforms.fields.simple import BooleanField
 from wtforms.validators import DataRequired
+
 from .db_session import SqlAlchemyBase
 
 
 class User(SqlAlchemyBase, UserMixin):  # таблица пользователей
     __tablename__ = 'users'
-
     id = sqlalchemy.Column(sqlalchemy.Integer,
                            primary_key=True, autoincrement=True)
     name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
@@ -38,5 +38,4 @@ class User(SqlAlchemyBase, UserMixin):  # таблица пользовател�
 class LoginForm(FlaskForm):  # форма для входа
     email = StringField('Введите почту', validators=[DataRequired()])
     password = PasswordField('Введите пароль', validators=[DataRequired()])
-    remember_me = BooleanField('Запомнить меня')
     submit = SubmitField('Войти')

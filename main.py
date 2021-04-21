@@ -1,16 +1,18 @@
 import datetime
 import sqlite3
+
 import vk_api
 from flask import Flask, render_template, redirect, request
 from flask import abort
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from flask_ngrok import run_with_ngrok
+
 from data import db_session, users, accounts
 from data.news import News
 from data.users import User, LoginForm
+from forms.edit import RedactMailForm, RedactNameForm, RedactPasswordForm, MarketForm
 from forms.news import NewsForm
 from forms.user import RegisterForm
-from forms.edit import RedactMailForm, RedactNameForm, RedactPasswordForm, MarketForm
 
 app = Flask(__name__)  # создание приложения
 login_manager = LoginManager()
@@ -20,7 +22,7 @@ app.config['SECRET_KEY'] = 'yandex_lyceum_secret_key'
 UPLOAD_STATIC = 'static/img/user_avatars/'  # папка для сохранения фотографий пользователей
 app.config['UPLOAD_STATIC'] = UPLOAD_STATIC
 edit_mode = False  # мод редактирования новостей
-ADMINS = [1, 2]  # список айди админов
+ADMINS = [1, 3]  # список айди админов
 GROUP_TOKEN = '362ed726c14963a17c777db697e93fb0c371c60' \
               '71bd08be014138bfdef0bbcbbe2755016e25bda6143739'  # токен группы вк
 
@@ -118,10 +120,9 @@ def profile():
             return render_template('profile.html', name=current_user.name,
                                    photo='/'.join(current_user.photo.split('/')[1:]),
                                    email=current_user.email,
-                                   created_date=
-                                   str(current_user.created_date).split()[0].split('-'),
-                                   title=current_user.name, is_photo=current_user.is_photo,
-                                   message='Вы не выбрали фотографию')
+                                   created_date=str(current_user.created_date).split()[0].split(
+                                       '-'),
+                                   title=current_user.name, is_photo=current_user.is_photo)
         if str(photo) != "<FileStorage: '' ('application/octet-stream')>":  # присвоение фото user
             user = session.query(User).filter(User.id == current_user.id).first()
             user.photo = name
@@ -229,9 +230,12 @@ def news():
             arr.append(
                 [item.title, item.content, int(str(delta).split()[0].split(':')[0]), 'hours',
                  item.id])
-        else:
+        elif int(str(delta).split()[0].split(':')[1]) != 0:
             arr.append([item.title, item.content,
                         int(str(delta).split()[0].split(':')[1]), 'minutes', item.id])
+        else:
+            arr.append([item.title, item.content,
+                        '', 'a few seconds', item.id])
     if current_user.is_authenticated:
         return render_template('news.html', title='Новости', news=arr[::-1],
                                photo='/'.join(current_user.photo.split('/')[1:]),
@@ -375,10 +379,14 @@ def improvements():
                 arr.append(
                     [[user['first_name'], user['last_name'], item[0], user['photo_50']], item[1],
                      int(str(delta).split(':')[0]), 'hours'])
-            else:
+            elif int(str(delta).split(':')[1]) != 0:
                 arr.append(
                     [[user['first_name'], user['last_name'], item[0], user['photo_50']], item[1],
                      int(str(delta).split(':')[1]), 'minutes'])
+            else:
+                arr.append(
+                    [[user['first_name'], user['last_name'], item[0], user['photo_50']], item[1],
+                     '', 'a few seconds'])
         return render_template('reviews.html', title='Предложения', reviews=arr[::-1],
                                is_photo=current_user.is_photo,
                                photo='/'.join(current_user.photo.split('/')[1:]), impr=True)
@@ -393,7 +401,7 @@ def reviews():
     vk_group_session = vk_api.VkApi(token=GROUP_TOKEN)
     data = cur.execute('SELECT * FROM reviews').fetchall()
     arr = []  # список пользователей
-    for item in data:
+    for item in data[::-1]:
         delta = datetime.datetime.now() - datetime.datetime.strptime(item[2], '%Y-%m-%d %H:%M:%S')
         user = vk_group_session.method("users.get", {"user_ids": item[0], "fields": "photo_50"})[0]
         if delta.days != 0:
@@ -404,10 +412,14 @@ def reviews():
             arr.append(
                 [[user['first_name'], user['last_name'], item[0], user['photo_50']], item[1],
                  int(str(delta).split(':')[0]), 'hours'])
-        else:
+        elif int(str(delta).split(':')[1]) != 0:
             arr.append(
                 [[user['first_name'], user['last_name'], item[0], user['photo_50']], item[1],
                  int(str(delta).split(':')[1]), 'minutes'])
+        else:
+            arr.append(
+                [[user['first_name'], user['last_name'], item[0], user['photo_50']], item[1],
+                 '', 'a few seconds'])
     if current_user.is_authenticated:
         return render_template('reviews.html', title='Отзывы', reviews=arr,
                                is_photo=current_user.is_photo,
@@ -551,7 +563,8 @@ def edit_item(edit_acc_id):
     return render_template('add_acc.html', form=form,
                            name=current_user.name,
                            photo='/'.join(current_user.photo.split('/')[1:]),
-                           is_photo=current_user.is_photo, title='Редактирование товара')
+                           is_photo=current_user.is_photo, title='Редактирование товара',
+                           edit=True)
 
 
 @app.route('/delete_acc/<int:acc_id>', methods=['GET', 'POST'])  # форма удаления аккаунта
@@ -571,6 +584,7 @@ def item_delete(acc_id):
 @app.route('/market/<category>', methods=['POST', 'GET'])  # сортировка аккаунтов по категориям
 def sorted_market(category):
     session = db_session.create_session()
+    is_my = False
     if category == 'vk':
         account_session = session.query(accounts.Accounts).filter(accounts.Accounts.type
                                                                   == 'VK')
@@ -589,6 +603,7 @@ def sorted_market(category):
     elif category == 'my':
         account_session = session.query(accounts.Accounts).filter(accounts.Accounts.user_id
                                                                   == current_user.id)
+        is_my = True
     else:
         account_session = session.query(accounts.Accounts).filter(accounts.Accounts.type
                                                                   == 'Other')
@@ -606,7 +621,7 @@ def sorted_market(category):
                                photo='/'.join(current_user.photo.split('/')[1:]),
                                account_dict=account_dict,
                                is_photo=current_user.is_photo, ADMINS=ADMINS,
-                               title=f'Аккаунты: {category.title()}')
+                               title=f'Аккаунты: {category.title()}', is_my=is_my)
     return render_template('market.html',
                            name=current_user.name,
                            account_dict=account_dict,

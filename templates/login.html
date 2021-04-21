@@ -24,10 +24,6 @@
                 {% endfor %}
             </div>
             <div class="container-fluid my-4">
-                {{ form.remember_me() }} {{
-                form.remember_me.label }}
-            </div>
-            <div class="container-fluid my-4">
                 {{ form.submit(type="submit", class="btn btn-success") }}
             </div>
             {% if message|length > 1 %}

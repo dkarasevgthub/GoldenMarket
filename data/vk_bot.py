@@ -17,7 +17,7 @@ EXCEPTIONS = [545571708]  # id пользлователей недоступны
 
 def back_keyboard():  # клавиатура с кнопкой "Back"
     back_btn_keyboard = VkKeyboard(one_time=False)
-    back_btn_keyboard.add_button('Назад', color=VkKeyboardColor.SECONDARY)
+    back_btn_keyboard.add_button('Back', color=VkKeyboardColor.SECONDARY)
     return back_btn_keyboard.get_keyboard()
 
 
@@ -118,7 +118,7 @@ for event in long_poll.listen():
             is_admin = False
         # функционал кнопки "Назад"
         if waiting_for_rev and not admin_board and not waiting_for_imp and \
-                event.obj.message['text'] != 'Назад':
+                event.obj.message['text'] != 'Back':
             waiting_for_rev = False
             keyboard = main_keyboard(is_admin)
             cur.execute(f"INSERT INTO reviews(vk_id, value, date) "
@@ -132,7 +132,7 @@ for event in long_poll.listen():
             con.commit()
         # функционал кнопки "Назад"
         if waiting_for_imp and not admin_board and not waiting_for_rev \
-                and event.obj.message['text'] != 'Назад':
+                and event.obj.message['text'] != 'Back':
             waiting_for_imp = False
             keyboard = main_keyboard(is_admin)
             cur.execute(f"INSERT INTO improvements(vk_id, value, date) "
@@ -165,7 +165,7 @@ for event in long_poll.listen():
                              keyboard=keyboard
                              )
         # функционал кнопки "Назад" в главном меню
-        elif event.obj.message['text'] == 'Назад' and not admin_board:
+        elif event.obj.message['text'] == 'Back' and not admin_board:
             keyboard = main_keyboard(is_admin)
             waiting_for_rev = False
             waiting_for_imp = False
@@ -432,7 +432,7 @@ for event in long_poll.listen():
                              )
         # функционал кнопки "Back"
         elif not waiting_for_imp and not waiting_for_rev and not waiting_for_id and \
-                event.obj.message['text'] != 'Назад' and event.obj.message['text'] != 'Back':
+                event.obj.message['text'] != 'Back':
             keyboard = main_keyboard(is_admin)
             vk.messages.send(user_id=event.obj.message['from_id'],
                              message='⏬',

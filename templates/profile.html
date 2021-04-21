@@ -16,9 +16,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" fill="currentColor"
                  style="">
                 <rect id="backgroundrect" width="100%" height="100%" x="0" y="0" fill="none"
-                      stroke="none" class="" style=""/>
-
-
+                      stroke="none"/>
                 <g class="currentLayer" style=""><title>Layer 1</title>
                     <path d="M193.49710122060674,89.74631658161596 a64.09743764368731,64.09743764368731 0 1 1 -128.19487528737463,0 a64.09743764368731,64.09743764368731 0 0 1 128.19487528737463,0 z"
                           id="svg_1" class="" fill="#d1d1d1" fill-opacity="1"/>
@@ -31,7 +29,8 @@
         {% endif %}
         <div class="container p-0 text-start ms-4">
             <div class="d-flex mb-4">
-                <h5 class="my-auto"><i class="fa fa-user fa-1x simple-btn me-1" aria-hidden="true"></i> Имя пользователя: {{ name }}</h5>
+                <h5 class="my-auto"><i class="fa fa-user fa-1x simple-btn me-1"
+                                       aria-hidden="true"></i> Имя пользователя: {{ name }}</h5>
                 <a href="/redact_name">
                     <button class="simple-btn btn-sm btn-secondary ms-2">
                         <i class="fa fa-cog fa-1x simple-btn me-1" aria-hidden="true"></i>
@@ -45,7 +44,8 @@
             </div>
             <div class="d-flex my-4">
                 <h5 class="my-auto">
-                    <i class="fa fa-envelope fa-1x simple-btn me-1" aria-hidden="true"></i> Электронная почта: {{ email }}
+                    <i class="fa fa-envelope fa-1x simple-btn me-1" aria-hidden="true"></i>
+                    Электронная почта: {{ email }}
                 </h5>
                 <a href="/redact_mail">
                     <button class="simple-btn btn-sm btn-secondary ms-2">
@@ -55,7 +55,8 @@
             </div>
             <div class="d-flex my-4">
                 <h5 class="my-auto">
-                    <i class="fa fa-calendar-o fa-1x simple-btn me-1" aria-hidden="true"></i> Дата регистрации: {{ created_date[2] }}.{{ created_date[1] }}.{{ created_date[0] }}
+                    <i class="fa fa-calendar-o fa-1x simple-btn me-1" aria-hidden="true"></i> Дата
+                    регистрации: {{ created_date[2] }}.{{ created_date[1] }}.{{ created_date[0] }}
                 </h5>
             </div>
             <div class="d-flex my-4">
@@ -75,11 +76,11 @@
                     </button>
                 </form>
             </div>
-            {{message}}
             <div class="d-flex mt-4">
                 <a href="/delete">
                     <button class="btn-sm btn-danger ms-2">
-                        <i class="fa fa-trash-o fa-1x simple-btn" aria-hidden="true"></i> Удалить профиль
+                        <i class="fa fa-trash-o fa-1x simple-btn" aria-hidden="true"></i> Удалить
+                        профиль
                     </button>
                 </a>
             </div>
