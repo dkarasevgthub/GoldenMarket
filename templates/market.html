@@ -45,6 +45,13 @@
                 <i class="fa fa-bookmark fa-2x simple-btn me-1" aria-hidden="true"></i>
             </button>
         </a>
+        {% if current_user.is_authenticated %}
+            <a href="/market/my" class="mx-1">
+                <button class="simple-btn btn btn-dark px-4 py-2 border-2 border-success">
+                    <i class="fa fa-beer fa-2x simple-btn me-1" aria-hidden="true"></i>
+                </button>
+            </a>
+        {% endif %}
     </div>
     {% if current_user.is_authenticated %}
     <div class="container text-center bg-dark mx-auto m-3">

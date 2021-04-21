@@ -480,6 +480,7 @@ def add_item():
                                    photo='/'.join(current_user.photo.split('/')[1:]),
                                    is_photo=current_user.is_photo,
                                    message='Опишите ваш аккаунт более подробно')
+        acc.user_id = current_user.id
         session.add(acc)
         session.commit()
         account_session = session.query(accounts.Accounts).all()
@@ -585,6 +586,9 @@ def sorted_market(category):
     elif category == 'mail':
         account_session = session.query(accounts.Accounts).filter(accounts.Accounts.type
                                                                   == 'Mail')
+    elif category == 'my':
+        account_session = session.query(accounts.Accounts).filter(accounts.Accounts.user_id
+                                                                  == current_user.id)
     else:
         account_session = session.query(accounts.Accounts).filter(accounts.Accounts.type
                                                                   == 'Other')

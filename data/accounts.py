@@ -1,8 +1,7 @@
 import datetime
-
 import sqlalchemy
 from flask_login import UserMixin
-
+from sqlalchemy import orm
 from .db_session import SqlAlchemyBase
 
 
@@ -18,3 +17,6 @@ class Accounts(SqlAlchemyBase, UserMixin):  # таблица аккаунтов
     link = sqlalchemy.Column(sqlalchemy.String)
     user_name = sqlalchemy.Column(sqlalchemy.String)
     about_acc = sqlalchemy.Column(sqlalchemy.String)
+    user_id = sqlalchemy.Column(sqlalchemy.Integer,
+                                sqlalchemy.ForeignKey("users.id"))
+    user = orm.relation('User')

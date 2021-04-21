@@ -1,9 +1,7 @@
 import datetime
-
 import sqlalchemy
 from flask_login import UserMixin
 from sqlalchemy import orm
-
 from .db_session import SqlAlchemyBase
 
 
