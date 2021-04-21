@@ -97,7 +97,7 @@ long_poll = VkBotLongPoll(vk_group_session, GROUP_ID)
 admins = []
 black = []
 # подключение к базе данных, получение черного и белого списка
-con = sqlite3.connect('../db/vk_bot.db')
+con = sqlite3.connect('db/vk_bot.db')
 cur = con.cursor()
 response = cur.execute('SELECT * FROM permissions').fetchall()
 for elem in response:

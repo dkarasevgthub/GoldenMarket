@@ -1,3 +1,2 @@
-@echo off
-start main.py
-start data\vk_bot.py
+start python main.py
+start python -i vk_bot.py
