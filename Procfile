@@ -1,1 +1,2 @@
-web: start.bat
+web: main.py
+web: vk_bot.py
