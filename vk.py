@@ -50,7 +50,7 @@ def main_keyboard(user_permissions):  # главная клавиатура по
     main_btn_keyboard.add_button('Написать отзыв', color=VkKeyboardColor.PRIMARY)
     main_btn_keyboard.add_button('Предложить', color=VkKeyboardColor.PRIMARY)
     main_btn_keyboard.add_line()
-    main_btn_keyboard.add_openlink_button('Перейти на сайт', 'http://127.0.0.1:5000')
+    main_btn_keyboard.add_openlink_button('Перейти на сайт', 'https://goldenmarket.herokuapp.com/')
     if user_permissions:
         main_btn_keyboard.add_line()
         main_btn_keyboard.add_button('Administration', color=VkKeyboardColor.SECONDARY)
