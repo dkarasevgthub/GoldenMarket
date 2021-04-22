@@ -1,6 +1,7 @@
 import datetime
 import os
 import sqlite3
+from PIL import Image
 
 import vk_api
 from flask import Flask, render_template, redirect, request, abort
@@ -119,13 +120,22 @@ def profile():
         name = app.config['UPLOAD_STATIC'] + photo.filename
         try:
             photo.save(name)
-        except PermissionError:
+            img = Image.open(name)
+            w, h = img.size
+            if w > h:
+                area = ((w - h) // 2, 0, h + (w - h) // 2, h)
+            else:
+                area = (0, (h - w) // 2, w, w + (h - w) // 2)
+            cropped_img = img.crop(area)
+            cropped_img.save(name)
+        except Exception:
             return render_template('profile.html', name=current_user.name,
                                    photo='/'.join(current_user.photo.split('/')[1:]),
                                    email=current_user.email,
                                    created_date=str(current_user.created_date).split()[0].split(
                                        '-'),
-                                   title=current_user.name, is_photo=current_user.is_photo)
+                                   title=current_user.name, is_photo=current_user.is_photo,
+                                   message='Вы не выбрали фотографию.')
         if str(photo) != "<FileStorage: '' ('application/octet-stream')>":  # присвоение фото user
             user = session.query(User).filter(User.id == current_user.id).first()
             user.photo = name
@@ -641,5 +651,6 @@ def sorted_market(category):
 
 if __name__ == '__main__':
     db_session.global_init("db/logins.db")
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    #port = int(os.environ.get("PORT", 5000))
+    #app.run(host='0.0.0.0', port=port)
+    app.run()
