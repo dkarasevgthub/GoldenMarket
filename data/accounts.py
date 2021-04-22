@@ -15,7 +15,6 @@ class Accounts(SqlAlchemyBase, UserMixin):  # таблица аккаунтов
     title = sqlalchemy.Column(sqlalchemy.String)
     type = sqlalchemy.Column(sqlalchemy.String)
     price = sqlalchemy.Column(sqlalchemy.String)
-    count = sqlalchemy.Column(sqlalchemy.Integer)
     link = sqlalchemy.Column(sqlalchemy.String)
     user_name = sqlalchemy.Column(sqlalchemy.String)
     about_acc = sqlalchemy.Column(sqlalchemy.String)

@@ -19,6 +19,7 @@ login_manager.init_app(app)
 app.config['SECRET_KEY'] = 'yandex_lyceum_secret_key'
 UPLOAD_STATIC = 'static/img/user_avatars/'  # папка для сохранения фотографий пользователей
 app.config['UPLOAD_STATIC'] = UPLOAD_STATIC
+app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=365)
 edit_mode = False  # мод редактирования новостей
 ADMINS = [1, 3]  # список айди админов
 GROUP_TOKEN = '362ed726c14963a17c777db697e93fb0c371c60' \
@@ -75,6 +76,8 @@ def register():
         session.add(user)  # добавление пользователя в базу данных
         session.commit()
         return redirect('/login')
+    if current_user.is_authenticated:
+        return redirect('/')
     return render_template('register.html', title='Регистрация', form=form)
 
 
@@ -95,6 +98,8 @@ def login():
             return render_template('login.html',
                                    message="Такого пользователя не существует",
                                    form=form)
+    if current_user.is_authenticated:
+        return redirect('/')
     return render_template('login.html', title='Авторизация', form=form)
 
 
@@ -329,12 +334,12 @@ def edit_news(edit_id):
             news_edit = db_sess.query(News).filter(News.id == edit_id,
                                                    News.user == current_user
                                                    ).first()
-            if news_edit:  # если новость существует, редактируем еём
+            if news_edit:  # если новость существует, редактируем её
                 news_edit.title = form.title.data
                 news_edit.content = form.content.data
                 news_edit.created_date = datetime.datetime.now()
                 db_sess.commit()
-                return redirect('/')
+                return redirect('/news')
             else:  # если новости не существует, выбрасываем ошибку 404
                 abort(404)
         return render_template('add_news.html',
@@ -445,8 +450,8 @@ def market():
     return render_template('market.html', account_dict=account_dict, title='Аккануты')
 
 
-@login_required
 @app.route('/add_acc', methods=['POST', 'GET'])  # страница добавления аккаунта
+@login_required
 def add_item():
     form = MarketForm()  # создание формы
     if form.validate_on_submit():
@@ -481,7 +486,6 @@ def add_item():
                                    photo='/'.join(current_user.photo.split('/')[1:]),
                                    is_photo=current_user.is_photo,
                                    message='Вы не ввели цену аккаунта')
-        acc.count = form.count.data
         acc.user_name = current_user.name
         acc.about_acc = form.about.data
         if len(acc.about_acc) < 15:  # если пользователь описал аккаунт слишком коротко
@@ -529,7 +533,7 @@ def edit_item(edit_acc_id):
             accounts.Accounts.id == edit_acc_id).first()
         if account_session:
             account_session.title = form.name.data
-            if len(account_session.title) <= 5:  # если название аккаунта слишком короткое
+            if len(account_session.title) <= 5:  # если название аккаунта короче 5 символов
                 return render_template('add_acc.html', form=form,
                                        name=current_user.name,
                                        photo='/'.join(current_user.photo.split('/')[1:]),
@@ -551,7 +555,19 @@ def edit_item(edit_acc_id):
                                        photo='/'.join(current_user.photo.split('/')[1:]),
                                        is_photo=current_user.is_photo,
                                        message='Вы слишком высокую цену на аккаунт. Снизьте цену')
+            elif len(account_session.price) == 0:  # если пользователь не ввел цену
+                return render_template('add_acc.html', form=form,
+                                       name=current_user.name,
+                                       photo='/'.join(current_user.photo.split('/')[1:]),
+                                       is_photo=current_user.is_photo,
+                                       message='Вы не ввели цену аккаунта')
             account_session.about_acc = form.about.data
+            if len(account_session.about_acc) < 15:  # если описали аккаунт слишком коротко
+                return render_template('add_acc.html', form=form,
+                                       name=current_user.name,
+                                       photo='/'.join(current_user.photo.split('/')[1:]),
+                                       is_photo=current_user.is_photo,
+                                       message='Опишите ваш аккаунт более подробно')
             session.commit()
             return redirect('/market')
         else:  # если аккаунта не существует, выбрасываем ошибку 404
@@ -619,7 +635,6 @@ def sorted_market(category):
                                is_photo=current_user.is_photo, ADMINS=ADMINS,
                                title=f'Аккаунты: {category.title()}', is_my=is_my)
     return render_template('market.html',
-                           name=current_user.name,
                            account_dict=account_dict,
                            title=f'Аккаунты: {category.title()}')
 
