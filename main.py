@@ -5,19 +5,17 @@ import vk_api
 from flask import Flask, render_template, redirect, request
 from flask import abort
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
-from flask_ngrok import run_with_ngrok
 
 from data import db_session, users, accounts
 from data.news import News
-from data.users import User, LoginForm
+from data.users import User
 from forms.edit import RedactMailForm, RedactNameForm, RedactPasswordForm, MarketForm
 from forms.news import NewsForm
-from forms.user import RegisterForm
+from forms.user import RegisterForm, LoginForm
 
 app = Flask(__name__)  # создание приложения
 login_manager = LoginManager()
 login_manager.init_app(app)
-run_with_ngrok(app)
 app.config['SECRET_KEY'] = 'yandex_lyceum_secret_key'
 UPLOAD_STATIC = 'static/img/user_avatars/'  # папка для сохранения фотографий пользователей
 app.config['UPLOAD_STATIC'] = UPLOAD_STATIC
@@ -87,7 +85,7 @@ def login():
         session = db_session.create_session()
         user = session.query(users.User).filter(users.User.email == form.email.data).first()
         if user and user.check_password(form.password.data):  # если верный пароль, то входим
-            login_user(user, remember=form.remember_me.data)
+            login_user(user)
             return redirect("/")
         elif user:  # если неверный логин и/или пароль
             return render_template('login.html',
@@ -433,7 +431,7 @@ def market():
     account_session = session.query(accounts.Accounts).all()
     account_dict = {}  # словарь аккаунтов
     for account in account_session[::-1]:
-        account_dict[account.title] = [account.price, account.count, account.link,
+        account_dict[account.title] = [account.price, 1, account.link,
                                        account.user_name, account.type.lower(), account.id,
                                        str(account.created_date).split()[0].split('-'),
                                        account.about_acc,
@@ -498,7 +496,7 @@ def add_item():
         account_session = session.query(accounts.Accounts).all()
         account_dict = {}  # словарь аккаунтов
         for account in account_session:
-            account_dict[account.title] = [account.price, account.count, account.link,
+            account_dict[account.title] = [account.price, 1, account.link,
                                            account.user_name, account.type, account.id,
                                            account.created_date, account.about_acc]
         return redirect('/market')
@@ -522,7 +520,6 @@ def edit_item(edit_acc_id):
             form.category.data = account_session.type
             form.link.data = account_session.link
             form.price.data = account_session.price
-            form.count.data = account_session.count
             form.about.data = account_session.about_acc
         else:  # если аккаунт не существует, выбрасываем ошибку 404
             abort(404)
@@ -554,7 +551,6 @@ def edit_item(edit_acc_id):
                                        photo='/'.join(current_user.photo.split('/')[1:]),
                                        is_photo=current_user.is_photo,
                                        message='Вы слишком высокую цену на аккаунт. Снизьте цену')
-            account_session.count = form.count.data
             account_session.about_acc = form.about.data
             session.commit()
             return redirect('/market')
@@ -609,7 +605,7 @@ def sorted_market(category):
                                                                   == 'Other')
     account_dict = {}  # словарь аккаунтов
     for account in account_session[::-1]:
-        account_dict[account.title] = [account.price, account.count, account.link,
+        account_dict[account.title] = [account.price, 1, account.link,
                                        account.user_name, account.type.lower(), account.id,
                                        str(account.created_date).split()[0].split('-'),
                                        account.about_acc,

@@ -34,8 +34,3 @@ class User(SqlAlchemyBase, UserMixin):  # таблица пользовател�
     def check_password(self, password):
         return check_password_hash(self.hashed_password, password)
 
-
-class LoginForm(FlaskForm):  # форма для входа
-    email = StringField('Введите почту', validators=[DataRequired()])
-    password = PasswordField('Введите пароль', validators=[DataRequired()])
-    submit = SubmitField('Войти')
