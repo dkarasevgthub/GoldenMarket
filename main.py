@@ -1,9 +1,9 @@
 import datetime
+import os
 import sqlite3
 
 import vk_api
-from flask import Flask, render_template, redirect, request
-from flask import abort
+from flask import Flask, render_template, redirect, request, abort
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 
 from data import db_session, users, accounts
@@ -625,5 +625,6 @@ def sorted_market(category):
 
 
 if __name__ == '__main__':
-    db_session.global_init("db/logins.db")  # инициализируем базу данных
-    app.run()  # запуск приложения
+    db_session.global_init("db/logins.db")
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
